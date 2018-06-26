@@ -1,6 +1,5 @@
-I am a software engineer who wants to positively affect the world.
+I am a software engineer who wants to [positively affect the world.](beliefs.md)
 
-- cv
-- github
-- medium
-- linkedin
+- [resume](Todd_Cooke_Resume.pdf)
+- [medium](https://medium.com/@toddcookevt)
+- [linkedin](https://www.linkedin.com/in/toddcooke/)
