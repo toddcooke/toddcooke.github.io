@@ -5,8 +5,8 @@ Software Engineer
 - [GitHub](https://github.com/toddcooke)
 - [Medium](https://medium.com/@toddcookevt)
 
-#### Employment
-##### Nike through Pro Unlimited, Software Engineer, June 2018 - December 2019
+### Employment
+#### Nike through Pro Unlimited, Software Engineer, June 2018 - December 2019
 - Design and maintain microservices to enable inventory management for
 every Nike store around the world.
 - Wrote service contracts using OpenAPI 3
@@ -19,15 +19,15 @@ in Scala and Java
 - Instrumented code using SignalFx and Splunk and created dashboards
 - Kept Infrastructure as Code using Cloudformation
 
-##### Dealer.com, Intern, June 2017 - August 2017
+#### Dealer.com, Intern, June 2017 - August 2017
 - Created a React web app to allow vehicle trade-ins online.
 
-##### People’s United Bank, Intern, March 2016 - April 2017
+#### People’s United Bank, Intern, March 2016 - April 2017
 - Created a web dashboard with Python and Flask to help Anti Money
 Laundering efforts.
 
-#### Education
-##### Vermont Technical College, September 2014 - May 2018
+### Education
+#### Vermont Technical College, September 2014 - May 2018
 - Bachelors in Software Engineering
 - Created an​ Android app​ which uses Google Maps, AWS API Gateway,
   Lambda, DynamoDB, Cognito, and S3.
