@@ -18,8 +18,10 @@ written in ScalaTest, Cucumber, and Gatling and run on Jenkins
 in Scala and Java
 - Instrumented code using SignalFx and Splunk and created dashboards
 - Kept Infrastructure as Code using Cloudformation
+
 ##### Dealer.com, Intern, June 2017 - August 2017
 - Created a React web app to allow vehicle trade-ins online.
+
 ##### People’s United Bank, Intern, March 2016 - April 2017
 - Created a web dashboard with Python and Flask to help Anti Money
 Laundering efforts.
