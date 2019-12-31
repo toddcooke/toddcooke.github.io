@@ -29,5 +29,5 @@ Laundering efforts.
 ### Education
 #### Vermont Technical College, September 2014 - May 2018
 - Bachelors in Software Engineering
-- Created an​ Android app​ which uses Google Maps, AWS API Gateway,
+- Created an [Android app](https://github.com/toddcooke/WalkingTale) which uses Google Maps, AWS API Gateway,
   Lambda, DynamoDB, Cognito, and S3.
