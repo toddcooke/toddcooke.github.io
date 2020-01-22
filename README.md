@@ -31,3 +31,23 @@ Laundering efforts.
 - Bachelors in Software Engineering
 - Created an [Android app](https://github.com/toddcooke/WalkingTale) which uses Google Maps, AWS API Gateway,
   Lambda, DynamoDB, Cognito, and S3.
+
+### Skills/Knowledge
+#### Strong
+- Scala
+- Testing - unit/functional/integration
+
+#### Medium 
+- Java
+- Cucumber
+- Javascript
+- Typescript
+- AWS Lambda
+- EC2
+#### Basic
+- NoSQL
+  - DynamoDB
+- SQL
+  - Postgres
+- React
+- Microservice design
