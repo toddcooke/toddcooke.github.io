@@ -44,6 +44,7 @@ Laundering efforts.
 - Typescript
 - AWS Lambda
 - EC2
+
 #### Basic
 - NoSQL
   - DynamoDB
