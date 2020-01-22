@@ -44,6 +44,9 @@ Laundering efforts.
 - Typescript
 - AWS Lambda
 - EC2
+- SignalFx
+- Splunk
+- Android
 
 #### Basic
 - NoSQL
