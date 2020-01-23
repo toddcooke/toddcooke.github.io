@@ -56,3 +56,4 @@ Laundering efforts.
 - React
 - Microservice design
 - Docker
+- Elasticsearch
