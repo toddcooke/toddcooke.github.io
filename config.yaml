@@ -1,0 +1,10 @@
+baseURL: 'https://toddcooke.github.io/'
+languageCode: 'en-us'
+title: 'Todd Cooke'
+theme: 'PaperMod'
+
+params:
+  socialIcons:
+    - name: "rss"
+      url: "http://toddcooke.github.io/index.xml"
+
