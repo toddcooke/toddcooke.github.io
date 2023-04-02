@@ -4,6 +4,8 @@ title: 'Todd Cooke'
 theme: 'PaperMod'
 
 params:
+  # For SEO
+  env: production
   socialIcons:
     - name: "rss"
       url: "https://toddcooke.github.io/index.xml"
