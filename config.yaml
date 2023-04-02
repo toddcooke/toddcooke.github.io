@@ -6,5 +6,5 @@ theme: 'PaperMod'
 params:
   socialIcons:
     - name: "rss"
-      url: "http://toddcooke.github.io/index.xml"
+      url: "https://toddcooke.github.io/index.xml"
 
