@@ -2,11 +2,27 @@ baseURL: 'https://toddcooke.github.io/'
 languageCode: 'en-us'
 title: 'Todd Cooke'
 theme: 'PaperMod'
+# Default is false which breaks link to my resume
+disablePathToLower: true
 
 params:
   # For SEO
   env: production
-  socialIcons:
-    - name: "rss"
-      url: "https://toddcooke.github.io/index.xml"
+  ShowShareButtons: true
+  ShareButtons: [ "linkedin", "twitter" ]
+
+menu:
+  main:
+    - identifier: contact
+      name: contact
+      url: /contact/
+      weight: 10
+    - identifier: resume
+      name: resume
+      url: /Todd_Cooke_Resume.pdf/
+      weight: 20
+    - identifier: rss
+      name: rss
+      url: index.xml
+      weight: 30
 
