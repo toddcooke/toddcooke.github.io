@@ -19,7 +19,7 @@ menu:
       weight: 10
     - identifier: resume
       name: resume
-      url: /Todd_Cooke_Resume.pdf/
+      url: /Todd_Cooke_Resume.pdf
       weight: 20
     - identifier: rss
       name: rss
