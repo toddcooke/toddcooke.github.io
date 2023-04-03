@@ -1,7 +1,7 @@
 ---
 title: "First of Many"
 date: 2023-04-03T11:14:45-04:00
-draft: true
+draft: false
 ---
 
 I've heard recently that a good way to learn is to write, that writing forces you to think and organize your thoughts and to create new connections while contemplating what to write next.
