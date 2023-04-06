@@ -1,7 +1,7 @@
 ---
 title: "TIL: MySQL for Developers"
 date: 2023-04-05T08:19:44-04:00
-draft: true
+draft: false
 tags:
 - MySQL
 - Databases
@@ -19,7 +19,7 @@ The following are some things I found especially helpful.
 - Use the data type that reflects what you are modeling, use Date for dates, use Decimal for exact values.
 - Use the smallest that works for your use case. Smaller values make queries faster. If you are representing the years
   someone could live, TINYINT can go up to 255 which is enough.
-- Use generated columns to create columns based on other columns based on an expression.
+- Use generated columns to create columns based on other columns with  an expression.
 
 ## Indexes
 
@@ -65,4 +65,43 @@ The following are some things I found especially helpful.
 - Select only what you need. Instead of select *, only select column you will use. This is especially important for large datatypes which are expensive to fetch like text and blob
 - count(*) gets number of rows in table
 - count(some_nullable_column) gets count of non-null values of column
-- 
+- Joins are very expensive if they don't use indexes. Use explain to see if a query is using an index or not.
+- Use subqueries to filter joined data
+  - select * from customer where id in (select customer_id from payment where amount > 5.99)
+  - Avoid using distinct, as distinct joins tables then throws duplicates away
+- Common Table Expressions (CTEs) are away to save a query like a function then call it later on
+- Recursive CTEs are a way to generate data
+- Union stacks results on top of another
+- Union all does not remove duplicates, much faster
+- Window functions allow you to do aggregations on each row, eg a running total
+- When ordering, add id after the column you are ordering by, which will give you deterministic results
+  - select id, birthday from people order by birthday, id 
+- Counting
+  ```
+  select 
+  count(*) as total, 
+  count(return_date) as completed_rentals,
+  count(if(DAYOFWEEK(rental_date) in (1,7), 1, null)) as weekend_rentals,
+  count(if(DAYOFWEEK(rental_date) in (1,7), null, 1)) as weekday_rentals,
+  from rental;
+  ```
+- Use <=> when comparing null with other values
+  - null = 1 -- returns null
+  - null <=> 1 -- returns 0 (false)
+- COALESCE(col1,col2,...) selects the first non-null value. Good if you have preferred and fallback columns
+- Large columns can't be indexed normally, but you can use an MD5 hash of the column and index that 
+  - ALTER TABLE urls ADD COLUMN url_md5 binary(16) GENERATED ALWAYS AS (UNHEX(MD5(url)));
+- MD5 indexes can also be made from multiple columns
+- Use timestamps instead of booleans for archived_at, created_at, deleted_at, etc. Default value can be null
+- MySQL can be used as a lightweight way to claim rows
+  - update imports set owner = 32, available = 0 where owner = 0 and available = 1 limit 1;
+- Summary table / rollup table
+  - Create a table for summary data
+  - Add aggregated data to summary table on regular basis
+  - Union the latest data to the summary table
+- Offset+Limit pagination
+  - Pros - easy to implement, user-friendly, makes pages directly addressable 
+  - Cons - records can drift as you page through if they are added/removed, deeper navigation is more expensive
+- Cursor based pagination
+  - Pros - handling drifting rows, good for infinite scroll
+  - Cons - no directly addressing pages, more complicated implementation
