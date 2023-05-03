@@ -1,5 +1,5 @@
 ---
-title: "TIL: MySQL for Developers"
+title: "TIL: MySQL best practices"
 date: 2023-04-05T08:19:44-04:00
 draft: false
 tags:
