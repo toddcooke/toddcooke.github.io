@@ -1,6 +1,6 @@
 Here are the places you can find me on the internet:
 
-- email: todd cooke vt at g mail dot com
-- [linkedin](https://www.linkedin.com/in/toddcooke/)
-- [github](https://github.com/toddcooke)
-- [twitter](https://twitter.com/tcookevt)
+- [Email](mailto:toddcookevt+toddcooke.github.io@gmail.com)
+- [LinkedIn](https://www.linkedin.com/in/toddcooke/)
+- [GitHub](https://github.com/toddcooke)
+- [Twitter/X](https://twitter.com/toddcookevt)
