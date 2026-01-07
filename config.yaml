@@ -8,8 +8,6 @@ disablePathToLower: true
 params:
   # For SEO
   env: production
-  ShowShareButtons: true
-  ShareButtons: [ "linkedin", "twitter" ]
 
 menu:
   main:
