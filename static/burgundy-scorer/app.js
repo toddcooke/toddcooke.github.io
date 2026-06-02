@@ -115,8 +115,15 @@ function resetGame() {
   render();
 }
 
+// Seed a fresh game with two players (appended one at a time so each gets a
+// distinct auto-name and color from newPlayer()).
+function seedTwoPlayers() {
+  state.players.push(newPlayer());
+  state.players.push(newPlayer());
+}
+
 // Boot: start with two players on the setup screen.
-state.players = [newPlayer(), newPlayer()];
+seedTwoPlayers();
 render();
 
 // --- Temporary stubs (replaced in Tasks 4-6) ---
