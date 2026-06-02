@@ -56,6 +56,22 @@ test('ranking marks players tied when total and tiebreak cannot separate them', 
   assert.deepEqual(result.map(p => p.tied), [true, true]);
 });
 
+test('ranking uses competition ranking: two tie for 1st, third gets rank 3', () => {
+  const players = [
+    { id: 'a', name: 'Sam', scores: { track: 150 } },
+    { id: 'b', name: 'Todd', scores: { track: 150 } },
+    { id: 'c', name: 'Pat', scores: { track: 120 } },
+  ];
+  const result = ranking(players);
+  const byName = Object.fromEntries(result.map(p => [p.name, p]));
+  assert.equal(byName.Sam.rank, 1);
+  assert.equal(byName.Todd.rank, 1);
+  assert.equal(byName.Pat.rank, 3);
+  assert.equal(byName.Sam.tied, true);
+  assert.equal(byName.Todd.tied, true);
+  assert.equal(byName.Pat.tied, false);
+});
+
 test('needsTiebreaker is true only when two players share the same total', () => {
   assert.equal(needsTiebreaker([
     { id: 'a', scores: { track: 150 } },
