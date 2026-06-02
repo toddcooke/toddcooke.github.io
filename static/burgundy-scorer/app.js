@@ -1,0 +1,134 @@
+import { CATEGORIES, categoryPoints, computeTotal, ranking, needsTiebreaker } from './scoring.js';
+
+const COLORS = ['#6f8a3f', '#3d6e9c', '#c9a227', '#8a5a2b', '#7d7f86', '#9c3b35'];
+const MAX_PLAYERS = 4;
+let nextId = 1;
+
+function newPlayer() {
+  const used = state.players.map(p => p.color);
+  const color = COLORS.find(c => !used.includes(c)) || COLORS[0];
+  return { id: `p${nextId++}`, name: `Player ${state.players.length + 1}`, color, scores: {}, tiebreak: null };
+}
+
+// Wizard steps: setup, one per scoring category, conditional tiebreaker, results.
+const STEPS = [
+  { kind: 'setup' },
+  ...CATEGORIES.map(c => ({ kind: 'category', category: c })),
+  { kind: 'tiebreaker' },
+  { kind: 'results' },
+];
+
+const state = { players: [], stepIndex: 0 };
+
+// ---- DOM helpers -----------------------------------------------------------
+const app = document.getElementById('app');
+
+function el(tag, props = {}, children = []) {
+  const node = document.createElement(tag);
+  for (const [k, v] of Object.entries(props)) {
+    if (k === 'class') node.className = v;
+    else if (k === 'text') node.textContent = v;
+    else if (k.startsWith('on') && typeof v === 'function') node.addEventListener(k.slice(2), v);
+    else if (v !== null && v !== undefined) node.setAttribute(k, v);
+  }
+  for (const child of [].concat(children)) {
+    if (child) node.appendChild(typeof child === 'string' ? document.createTextNode(child) : child);
+  }
+  return node;
+}
+
+function hexToken(text, color) {
+  return el('span', { class: 'hex token', style: `background:${color}` }, [String(text)]);
+}
+
+// ---- Navigation ------------------------------------------------------------
+function currentStep() { return STEPS[state.stepIndex]; }
+
+function isStepDisabled(step) {
+  // Skip the tiebreaker screen unless two players actually tie.
+  return step.kind === 'tiebreaker' && !needsTiebreaker(state.players);
+}
+
+function go(delta) {
+  let i = state.stepIndex + delta;
+  while (STEPS[i] && isStepDisabled(STEPS[i])) i += delta;   // hop over skipped steps
+  if (i < 0 || i >= STEPS.length) return;
+  state.stepIndex = i;
+  render();
+}
+
+function navBar({ nextLabel = 'Next', canNext = true } = {}) {
+  return el('div', { class: 'nav' }, [
+    el('button', { class: 'back', text: '◀ Back', disabled: state.stepIndex === 0 ? 'true' : null,
+      onclick: () => go(-1) }),
+    el('button', { class: 'home', text: '⌂ Home', onclick: () => { resetGame(); } }),
+    el('button', { class: 'next', text: `${nextLabel} ▶`, disabled: canNext ? null : 'true',
+      onclick: () => go(1) }),
+  ]);
+}
+
+// ---- Step: setup -----------------------------------------------------------
+function renderSetup() {
+  app.appendChild(el('h1', { class: 'step-title', text: 'Castles of Burgundy' }));
+  app.appendChild(el('p', { class: 'step-desc', text: 'Add players, then score the game' }));
+
+  for (const p of state.players) {
+    const swatches = el('div', { class: 'swatches' },
+      COLORS.map(c => el('span', {
+        class: 'swatch' + (c === p.color ? ' selected' : ''),
+        style: `background:${c}`,
+        onclick: () => { p.color = c; render(); },
+      })));
+
+    app.appendChild(el('div', { class: 'player-row' }, [
+      hexToken(state.players.indexOf(p) + 1, p.color),
+      el('input', { class: 'name-input', value: p.name,
+        oninput: (e) => { p.name = e.target.value; } }),
+      swatches,
+      el('button', { class: 'hex-btn hex', text: '−', onclick: () => {
+        state.players = state.players.filter(x => x !== p); render();
+      } }),
+    ]));
+  }
+
+  if (state.players.length < MAX_PLAYERS) {
+    app.appendChild(el('button', { class: 'add-player', text: '＋ Add player',
+      onclick: () => { state.players.push(newPlayer()); render(); } }));
+  }
+
+  app.appendChild(navBar({ canNext: state.players.length >= 1 }));
+}
+
+// ---- Render dispatch -------------------------------------------------------
+function render() {
+  app.innerHTML = '';
+  const step = currentStep();
+  if (step.kind === 'setup') renderSetup();
+  else if (step.kind === 'category') renderCategory(step.category);
+  else if (step.kind === 'tiebreaker') renderTiebreaker();
+  else if (step.kind === 'results') renderResults();
+}
+
+function resetGame() {
+  state.players = [];
+  state.stepIndex = 0;
+  render();
+}
+
+// Boot: start with two players on the setup screen.
+state.players = [newPlayer(), newPlayer()];
+render();
+
+// --- Temporary stubs (replaced in Tasks 4-6) ---
+function renderCategory(category) {
+  app.appendChild(el('h2', { class: 'step-title', text: category.label }));
+  app.appendChild(navBar());
+}
+function renderTiebreaker() {
+  app.appendChild(el('h2', { class: 'step-title', text: 'Tiebreaker' }));
+  app.appendChild(navBar());
+}
+function renderResults() {
+  app.appendChild(el('h2', { class: 'step-title', text: 'Final Scores' }));
+  app.appendChild(navBar());
+}
