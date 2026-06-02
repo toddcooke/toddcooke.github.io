@@ -1,0 +1,123 @@
+:root {
+  --parchment-top: #efe3c8;
+  --parchment-bottom: #d9c79c;
+  --ink: #4a3220;
+  --ink-soft: #7a5c3a;
+  --heading: #6b3f2a;
+  --row-bg: #f3ead2;
+  --row-border: #b89b66;
+  --hex-btn: #cdb27a;
+  --back: #9a2a2a;
+  --next: #3a7a3a;
+  --wine: #9c3b35;
+  --gold: #d4af37;
+  --silver: #aaa;
+  --bronze: #b07b46;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: linear-gradient(var(--parchment-top), var(--parchment-bottom));
+  background-attachment: fixed;
+  color: var(--ink);
+  font-family: Georgia, "Times New Roman", serif;
+}
+
+#app {
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 24px 16px 96px;
+}
+
+h1, h2, .step-title {
+  font-family: "Cinzel", Georgia, serif;
+  color: var(--heading);
+  text-align: center;
+  letter-spacing: 1px;
+  margin: 0 0 4px;
+}
+
+.step-title { font-size: 1.5rem; }
+.step-desc { text-align: center; color: var(--ink-soft); margin: 0 0 20px; font-size: 0.95rem; }
+
+/* Player rows */
+.player-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--row-bg);
+  border: 1px solid var(--row-border);
+  border-radius: 12px;
+  padding: 8px 10px;
+  margin-bottom: 10px;
+}
+.player-row .name { flex: 1; font-weight: bold; color: var(--ink); }
+.player-row input.name-input {
+  flex: 1; font: inherit; font-weight: bold; color: var(--ink);
+  background: transparent; border: none; border-bottom: 1px dashed var(--row-border);
+}
+
+/* Hexagons */
+.hex {
+  display: inline-flex; align-items: center; justify-content: center;
+  clip-path: polygon(25% 0, 75% 0, 100% 50%, 75% 100%, 25% 100%, 0 50%);
+  color: #fff; font-weight: bold; user-select: none;
+}
+.token { width: 30px; height: 30px; font-size: 0.7rem; }   /* running-total / player color */
+.hex-btn {
+  width: 34px; height: 34px; background: var(--hex-btn); color: var(--ink);
+  font-size: 1.2rem; border: none; cursor: pointer;
+}
+.hex-btn:active { filter: brightness(0.92); }
+
+.stepper { display: inline-flex; align-items: center; gap: 10px; }
+.stepper .value { min-width: 28px; text-align: center; font-weight: bold; font-size: 1.1rem; }
+input.num-input {
+  width: 84px; font: inherit; text-align: center; padding: 6px;
+  border: 1px solid var(--row-border); border-radius: 8px; background: #fff;
+}
+
+/* Color picker swatches (setup) */
+.swatches { display: flex; gap: 6px; }
+.swatch { width: 22px; height: 22px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; }
+.swatch.selected { border-color: var(--ink); }
+
+.add-player {
+  display: block; width: 100%; margin: 4px 0 16px; padding: 10px;
+  border: 1px dashed var(--row-border); border-radius: 12px;
+  background: transparent; color: var(--ink-soft); font: inherit; cursor: pointer;
+}
+
+/* Bottom hex navigation */
+.nav {
+  position: fixed; left: 0; right: 0; bottom: 0;
+  display: flex; justify-content: center; gap: 28px;
+  padding: 12px; background: linear-gradient(transparent, var(--parchment-bottom) 40%);
+}
+.nav button {
+  font-family: "Cinzel", serif; font-weight: 700; font-size: 0.95rem;
+  background: none; border: none; cursor: pointer; color: var(--ink-soft);
+}
+.nav button.back { color: var(--back); }
+.nav button.next { color: var(--next); }
+.nav button:disabled { opacity: 0.35; cursor: default; }
+
+/* Results grid */
+table.results { width: 100%; border-collapse: collapse; margin-top: 8px; }
+table.results th, table.results td { padding: 6px 8px; text-align: center; }
+table.results th:first-child, table.results td:first-child { text-align: left; }
+table.results tr + tr td { border-top: 1px solid var(--row-border); }
+table.results tr.total td { border-top: 2px solid var(--heading); font-weight: bold; font-size: 1.2rem; }
+.medals { display: flex; justify-content: space-around; margin: 14px 0 6px; }
+.medal { width: 48px; height: 48px; font-size: 0.8rem; }
+.medal.r1 { background: var(--gold); }
+.medal.r2 { background: var(--silver); }
+.medal.r3 { background: var(--bronze); }
+.new-game {
+  display: block; margin: 24px auto 0; padding: 10px 20px;
+  font-family: "Cinzel", serif; background: var(--wine); color: #fff;
+  border: none; border-radius: 10px; cursor: pointer;
+}
