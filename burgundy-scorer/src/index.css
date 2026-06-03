@@ -147,11 +147,13 @@ button {
   width: 7rem;
 }
 
-/* Compact per-player remove button in the column header. */
+/* Compact per-player remove button in the column header.
+   Kept to a >=24px target to satisfy WCAG target-size minimum. */
 .remove-player {
-  min-height: 0;
+  min-width: 24px;
+  min-height: 24px;
   margin: 0 0 0 0.35rem;
-  padding: 0.15rem 0.4rem;
+  padding: 0.1rem 0.4rem;
   font-size: 14px;
   line-height: 1;
 }
