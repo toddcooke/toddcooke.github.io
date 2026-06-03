@@ -81,12 +81,15 @@ export default function App() {
             </button>
             <button
                 onClick={() => {
-                    if (window.confirm("Clear all players and scores?")) {
-                        setPlayers(freshPlayers());
+                    if (window.confirm("Reset all scores? Players are kept.")) {
+                        // Zero every score but keep each player's id and name.
+                        setPlayers(prev =>
+                            prev.map(p => ({ ...makePlayer(p.name), id: p.id })),
+                        );
                     }
                 }}
             >
-                Clear
+                Clear scores
             </button>
 
             <div className="table-scroll">
