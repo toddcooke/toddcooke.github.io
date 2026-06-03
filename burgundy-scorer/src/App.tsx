@@ -12,6 +12,9 @@ interface Player {
     livestockTypes: number;        // monastery #24: 4 VP per distinct livestock type
     goodsSold: number;             // monastery #25: 1 VP per goods tile sold
     bonusTilesOwned: number;       // monastery #26: 3 VP per bonus tile owned
+    // Tiebreakers (never scored): used only when totals are equal.
+    emptyHexSpaces: number;        // fewer wins
+    bridgePosition: number;        // higher = farther behind, wins
 }
 
 type NumericKey =
@@ -53,12 +56,55 @@ function makePlayer(name: string): Player {
         livestockTypes: 0,
         goodsSold: 0,
         bonusTilesOwned: 0,
+        emptyHexSpaces: 0,
+        bridgePosition: 0,
     };
 }
 
 // Total VP: each category's count multiplied by its VP-per-unit.
 function playerTotal(p: Player): number {
     return SCORE_ROWS.reduce((sum, row) => sum + p[row.key] * row.vpPerUnit, 0);
+}
+
+// Tiebreaker-only fields (never added to the total).
+type TiebreakerKey = "emptyHexSpaces" | "bridgePosition";
+const TIEBREAKER_ROWS: { label: string; key: TiebreakerKey }[] = [
+    { label: "Empty hex spaces (tiebreak: fewer wins)", key: "emptyHexSpaces" },
+    { label: "Bridge position (tiebreak: higher = farther behind)", key: "bridgePosition" },
+];
+
+// Winner(s) by: highest total, then fewest empty hex spaces, then farthest
+// behind on the bridge (highest bridgePosition). Returns >1 id only on a full tie.
+function winningIds(players: Player[]): Set<string> {
+    if (players.length === 0) return new Set();
+    const best = [...players].sort(
+        (a, b) =>
+            playerTotal(b) - playerTotal(a) ||
+            a.emptyHexSpaces - b.emptyHexSpaces ||
+            b.bridgePosition - a.bridgePosition,
+    )[0];
+    return new Set(
+        players
+            .filter(
+                p =>
+                    playerTotal(p) === playerTotal(best) &&
+                    p.emptyHexSpaces === best.emptyHexSpaces &&
+                    p.bridgePosition === best.bridgePosition,
+            )
+            .map(p => p.id),
+    );
+}
+
+// Which tiebreaker rows are actually needed, given current totals/values.
+// [] = no tie; ["emptyHexSpaces"] = total tie; both = still tied after empty hexes.
+function neededTiebreakers(players: Player[]): TiebreakerKey[] {
+    if (players.length < 2) return [];
+    const max = Math.max(...players.map(playerTotal));
+    const tiedOnTotal = players.filter(p => playerTotal(p) === max);
+    if (tiedOnTotal.length < 2) return [];
+    const minEmpty = Math.min(...tiedOnTotal.map(p => p.emptyHexSpaces));
+    const tiedOnEmpty = tiedOnTotal.filter(p => p.emptyHexSpaces === minEmpty);
+    return tiedOnEmpty.length < 2 ? ["emptyHexSpaces"] : ["emptyHexSpaces", "bridgePosition"];
 }
 
 export default function App() {
@@ -68,6 +114,9 @@ export default function App() {
     function updateField<K extends keyof Player>(id: string, key: K, value: Player[K]) {
         setPlayers(prev => prev.map(p => (p.id === id ? { ...p, [key]: value } : p)));
     }
+
+    const winners = winningIds(players);
+    const tiebreakers = neededTiebreakers(players);
 
     return (
         <div>
@@ -121,10 +170,38 @@ export default function App() {
                 <tfoot>
                 <tr>
                     <th scope="row">Total</th>
-                    {players.map(player => (
-                        <td key={player.id}>{playerTotal(player)}</td>
-                    ))}
+                    {players.map(player => {
+                        const isWinner = winners.has(player.id);
+                        return (
+                            <td
+                                key={player.id}
+                                className={isWinner ? "winner" : undefined}
+                                aria-label={`Total ${playerTotal(player)} for ${player.name}${isWinner ? ", winner" : ""}`}
+                            >
+                                {isWinner ? "🏆 " : ""}{playerTotal(player)}
+                            </td>
+                        );
+                    })}
                 </tr>
+                {TIEBREAKER_ROWS.filter(row => tiebreakers.includes(row.key)).map(row => (
+                    <tr key={row.key}>
+                        <th scope="row">{row.label}</th>
+                        {players.map(player => (
+                            <td key={player.id}>
+                                <input
+                                    type="number"
+                                    min={0}
+                                    inputMode="numeric"
+                                    value={player[row.key]}
+                                    aria-label={`${row.label} for ${player.name}`}
+                                    onChange={e =>
+                                        updateField(player.id, row.key, Number(e.target.value))
+                                    }
+                                />
+                            </td>
+                        ))}
+                    </tr>
+                ))}
                 </tfoot>
             </table>
         </div>
