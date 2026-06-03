@@ -33,11 +33,11 @@ const SCORE_ROWS: { label: string; key: NumericKey; vpPerUnit: number }[] = [
     { label: "Worker chips (pairs)", key: "workerChipsPair", vpPerUnit: 1 },
     // 2019-edition monastery tiles that score at end of game. Enter the count
     // only if you own that monastery; leave 0 otherwise.
-    { label: "Goods variety monastery (2 VP/type)", key: "goodsTypesSold", vpPerUnit: 2 },
-    { label: "Building monastery (4 VP/building)", key: "buildingMonasteryMatches", vpPerUnit: 4 },
-    { label: "Livestock variety monastery (4 VP/type)", key: "livestockTypes", vpPerUnit: 4 },
-    { label: "Goods sold monastery (1 VP/tile)", key: "goodsSold", vpPerUnit: 1 },
-    { label: "Bonus-tile monastery (3 VP/tile)", key: "bonusTilesOwned", vpPerUnit: 3 },
+    { label: "#15 Goods variety monastery (2 VP/type)", key: "goodsTypesSold", vpPerUnit: 2 },
+    { label: "#16–23, #29 Building monastery (4 VP/building)", key: "buildingMonasteryMatches", vpPerUnit: 4 },
+    { label: "#24 Livestock variety monastery (4 VP/type)", key: "livestockTypes", vpPerUnit: 4 },
+    { label: "#25 Goods sold monastery (1 VP/tile)", key: "goodsSold", vpPerUnit: 1 },
+    { label: "#26 Bonus-tile monastery (3 VP/tile)", key: "bonusTilesOwned", vpPerUnit: 3 },
 ];
 
 function makePlayer(name: string): Player {
