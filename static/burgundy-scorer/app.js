@@ -135,7 +135,6 @@ function seedTwoPlayers() {
 seedTwoPlayers();
 render();
 
-// --- Temporary stubs (replaced in Tasks 4-6) ---
 function setScore(player, key, value) {
   const v = Math.max(0, Number(value) || 0);
   player.scores = { ...player.scores, [key]: v };
