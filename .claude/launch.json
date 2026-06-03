@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "burgundy-scorer",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["--prefix", "burgundy-scorer", "run", "dev"],
+      "port": 5173
+    }
+  ]
+}
