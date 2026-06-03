@@ -1,0 +1,84 @@
+/* Minimal modern base, tuned for WCAG 3 (APCA) contrast and user preferences. */
+
+:root {
+  color-scheme: light dark;
+
+  /* Light theme — near-black on near-white clears APCA Lc 90+ for body text. */
+  --bg: #fbfaf8;
+  --surface: #ffffff;
+  --text: #1a1613;
+  --muted: #4a443c;
+  --accent: #6b1f2a;        /* burgundy — Lc ~78 on --bg, ample for headings/links */
+  --focus: #6b1f2a;
+  --border: #d8d2c7;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* Dark theme — warm off-white on warm near-black, accent lightened to stay legible. */
+    --bg: #16130f;
+    --surface: #211c16;
+    --text: #ece7df;
+    --muted: #b6ada0;
+    --accent: #f0a3ad;      /* lighter rose — dark accents vanish on dark bg */
+    --focus: #f0a3ad;
+    --border: #3a342b;
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100svh;
+  padding: 2rem 1.25rem;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-size: 1rem;           /* rem so user font-size settings scale the UI */
+  line-height: 1.6;
+  color: var(--text);
+  background-color: var(--bg);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3 {
+  line-height: 1.2;
+  text-wrap: balance;        /* avoids orphaned words in headings */
+  color: var(--accent);
+}
+
+a {
+  color: var(--accent);
+  text-decoration-thickness: 0.08em;
+  text-underline-offset: 0.15em;
+}                            /* underlined: never rely on color alone (WCAG 1.4.1) */
+
+/* Clear, consistent keyboard focus indicator. */
+:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* Honor users who ask for less motion. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+caption {
+  caption-side: bottom;
+  padding: 10px;
+  font-weight: bold;
+}
