@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 interface Player {
     id: string;
@@ -61,6 +61,27 @@ function makePlayer(name: string): Player {
     };
 }
 
+const STORAGE_KEY = "burgundy-scorer:players";
+
+// A fresh calculator: one blank player. Used on first load and on Clear.
+function freshPlayers(): Player[] {
+    return [makePlayer("Player 1")];
+}
+
+// Load saved players from localStorage, backfilling any missing fields so older
+// saved data stays valid as the model grows. Falls back to a fresh calculator.
+function loadPlayers(): Player[] {
+    try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return freshPlayers();
+        const parsed: unknown = JSON.parse(raw);
+        if (!Array.isArray(parsed) || parsed.length === 0) return freshPlayers();
+        return parsed.map(p => ({ ...makePlayer(p?.name ?? "Player"), ...p }));
+    } catch {
+        return freshPlayers();
+    }
+}
+
 // Total VP: each category's count multiplied by its VP-per-unit.
 function playerTotal(p: Player): number {
     return SCORE_ROWS.reduce((sum, row) => sum + p[row.key] * row.vpPerUnit, 0);
@@ -108,7 +129,12 @@ function neededTiebreakers(players: Player[]): TiebreakerKey[] {
 }
 
 export default function App() {
-    const [players, setPlayers] = useState<Player[]>([makePlayer("todd")]);
+    const [players, setPlayers] = useState<Player[]>(loadPlayers);
+
+    // Persist to localStorage whenever players change.
+    useEffect(() => {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(players));
+    }, [players]);
 
     // Immutably update one field of one player by id.
     function updateField<K extends keyof Player>(id: string, key: K, value: Player[K]) {
@@ -128,6 +154,15 @@ export default function App() {
                 }
             >
                 Add player
+            </button>
+            <button
+                onClick={() => {
+                    if (window.confirm("Clear all players and scores?")) {
+                        setPlayers(freshPlayers());
+                    }
+                }}
+            >
+                Clear
             </button>
 
             <table>
