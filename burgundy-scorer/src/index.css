@@ -83,11 +83,25 @@ caption {
   font-weight: bold;
 }
 
-/* Winning player's total — marked with a 🏆 too, so it's not color-only. */
-.winner {
-  font-weight: bold;
-  background-color: color-mix(in srgb, var(--accent) 18%, transparent);
+/* Rank medals — fixed metallic colors with dark text (works in light & dark
+   themes); the place label ("1ST"…) means rank is never conveyed by color alone. */
+.medal {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.2rem;
+  height: 3.2rem;
+  clip-path: polygon(25% 0, 75% 0, 100% 50%, 75% 100%, 25% 100%, 0 50%);
+  color: #1a1613;
+  font-weight: 700;
+  font-size: 0.8rem;
 }
+
+.medal.rank-1 { background: #d4af37; } /* gold */
+.medal.rank-2 { background: #b9bcc2; } /* silver */
+.medal.rank-3 { background: #c08552; } /* bronze */
+.medal.rank-4 { background: #9098a0; } /* iron */
+.medal.rank-other { background: #cfcfcf; }
 
 /* Actions */
 button {
