@@ -178,6 +178,12 @@ button:disabled {
   width: 7rem;
 }
 
+/* A monastery tile already claimed by another player. */
+.table-scroll input:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
 /* Compact per-player remove button in the column header.
    Kept to a >=24px target to satisfy WCAG target-size minimum. */
 .remove-player {

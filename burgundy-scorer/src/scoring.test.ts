@@ -21,8 +21,9 @@ describe("playerTotal", () => {
     });
 
     it("applies the building monastery 4× and livestock 4× multipliers", () => {
-        const p = player({ buildingMonasteryMatches: 2, livestockTypes: 3 });
-        expect(playerTotal(p)).toBe(2 * 4 + 3 * 4);
+        // Each building monastery (#16–23/#29) scores 4 VP per matching building.
+        const p = player({ building17: 2, building22: 1, livestockTypes: 3 });
+        expect(playerTotal(p)).toBe(2 * 4 + 1 * 4 + 3 * 4);
     });
 
     it("ignores tiebreaker-only fields", () => {
