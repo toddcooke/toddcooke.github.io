@@ -81,12 +81,12 @@ export default function App() {
                 <thead>
                 <tr>
                     <th scope="col"></th>
-                    {players.map(player => (
+                    {players.map((player, i) => (
                         <th key={player.id} scope="col">
                             <input
                                 type="text"
                                 value={player.name}
-                                aria-label="Player name"
+                                aria-label={`Player ${i + 1} name`}
                                 onChange={e => updateField(player.id, "name", e.target.value)}
                             />
                             <button
