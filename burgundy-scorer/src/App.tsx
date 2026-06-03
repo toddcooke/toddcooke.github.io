@@ -80,7 +80,7 @@ export default function App() {
                 <caption>Castles of Burgundy — final scores</caption>
                 <thead>
                 <tr>
-                    <th scope="col">Category</th>
+                    <th scope="col"></th>
                     {players.map(player => (
                         <th key={player.id} scope="col">
                             <input
