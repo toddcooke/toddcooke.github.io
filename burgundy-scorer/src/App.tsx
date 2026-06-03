@@ -43,8 +43,6 @@ function loadPlayers(): Player[] {
 
 export default function App() {
     const [players, setPlayers] = useState<Player[]>(loadPlayers);
-    const [addTile, setAddTile] = useState("");
-    const [addOwner, setAddOwner] = useState("");
 
     // Persist to localStorage whenever players change (ignore quota/private-mode errors).
     useEffect(() => {
@@ -93,13 +91,9 @@ export default function App() {
     const places = ranking(players);
     const tiebreakers = neededTiebreakers(players);
 
-    // Monastery tiles already owned (so each unique tile is offered only once).
+    // Tiles already owned by someone, so each unique tile is offered only once.
     const ownedTileIds = new Set(players.flatMap(p => p.monasteries.map(h => h.tile)));
     const availableTiles = MONASTERY_TILES.filter(t => !ownedTileIds.has(t.id));
-    const holdings = players
-        .flatMap(p => p.monasteries.map(h => ({ player: p, holding: h, tile: monasteryTile(h.tile)! })))
-        .filter(x => x.tile)
-        .sort((a, b) => Number(a.tile.id) - Number(b.tile.id));
 
     return (
         <div>
@@ -177,6 +171,68 @@ export default function App() {
                         ))}
                     </tr>
                 ))}
+                <tr>
+                    <th scope="row">Monasteries</th>
+                    {players.map(player => (
+                        <td key={player.id} className="monastery-cell">
+                            {player.monasteries.length > 0 && (
+                                <ul>
+                                    {player.monasteries.map(h => {
+                                        const tile = monasteryTile(h.tile);
+                                        if (!tile) return null;
+                                        return (
+                                            <li key={h.tile}>
+                                                <span className="m-tag" title={tile.label}>
+                                                    #{h.tile}
+                                                </span>
+                                                <input
+                                                    type="number"
+                                                    min={0}
+                                                    inputMode="numeric"
+                                                    value={h.count}
+                                                    aria-label={`${tile.unitLabel} for ${player.name} (${tile.label})`}
+                                                    onFocus={e => e.target.select()}
+                                                    onChange={e =>
+                                                        setMonasteryCount(
+                                                            player.id,
+                                                            h.tile,
+                                                            Number(e.target.value),
+                                                        )
+                                                    }
+                                                />
+                                                <button
+                                                    type="button"
+                                                    className="remove-player"
+                                                    aria-label={`Remove ${tile.label} from ${player.name}`}
+                                                    title="Remove this monastery"
+                                                    onClick={() => removeMonastery(player.id, h.tile)}
+                                                >
+                                                    ✕
+                                                </button>
+                                            </li>
+                                        );
+                                    })}
+                                </ul>
+                            )}
+                            {availableTiles.length > 0 && (
+                                <select
+                                    aria-label={`Add monastery for ${player.name}`}
+                                    value=""
+                                    onChange={e => {
+                                        if (e.target.value) addMonastery(player.id, e.target.value);
+                                    }}
+                                >
+                                    <option value="">+ Add monastery…</option>
+                                    {availableTiles.map(t => (
+                                        <option key={t.id} value={t.id}>
+                                            {t.label}
+                                        </option>
+                                    ))}
+                                </select>
+                            )}
+                        </td>
+                    ))}
+                </tr>
                 </tbody>
                 <tfoot>
                 <tr>
@@ -230,82 +286,6 @@ export default function App() {
                 </tfoot>
             </table>
             </div>
-
-            <section className="monasteries">
-                <h2>Monastery tiles</h2>
-                {holdings.length === 0 ? (
-                    <p className="muted">No monastery tiles added yet.</p>
-                ) : (
-                    <ul className="monastery-list">
-                        {holdings.map(({ player, holding, tile }) => (
-                            <li key={`${player.id}:${tile.id}`}>
-                                <span className="m-tile">{tile.label}</span>
-                                <span className="m-owner">{player.name}</span>
-                                <input
-                                    type="number"
-                                    min={0}
-                                    inputMode="numeric"
-                                    value={holding.count}
-                                    aria-label={`${tile.unitLabel} for ${player.name} (${tile.label})`}
-                                    onFocus={e => e.target.select()}
-                                    onChange={e =>
-                                        setMonasteryCount(player.id, tile.id, Number(e.target.value))
-                                    }
-                                />
-                                <span className="m-vp">= {holding.count * tile.vpPerUnit} VP</span>
-                                <button
-                                    type="button"
-                                    className="remove-player"
-                                    aria-label={`Remove ${tile.label} from ${player.name}`}
-                                    title="Remove this monastery"
-                                    onClick={() => removeMonastery(player.id, tile.id)}
-                                >
-                                    ✕
-                                </button>
-                            </li>
-                        ))}
-                    </ul>
-                )}
-
-                {availableTiles.length > 0 && players.length > 0 && (
-                    <div className="monastery-add">
-                        <select
-                            aria-label="Monastery tile"
-                            value={addTile}
-                            onChange={e => setAddTile(e.target.value)}
-                        >
-                            <option value="">Choose tile…</option>
-                            {availableTiles.map(t => (
-                                <option key={t.id} value={t.id}>
-                                    {t.label}
-                                </option>
-                            ))}
-                        </select>
-                        <select
-                            aria-label="Owner"
-                            value={addOwner}
-                            onChange={e => setAddOwner(e.target.value)}
-                        >
-                            <option value="">Choose player…</option>
-                            {players.map(p => (
-                                <option key={p.id} value={p.id}>
-                                    {p.name}
-                                </option>
-                            ))}
-                        </select>
-                        <button
-                            type="button"
-                            disabled={!addTile || !addOwner}
-                            onClick={() => {
-                                addMonastery(addOwner, addTile);
-                                setAddTile("");
-                            }}
-                        >
-                            Add monastery
-                        </button>
-                    </div>
-                )}
-            </section>
         </div>
     );
 }
