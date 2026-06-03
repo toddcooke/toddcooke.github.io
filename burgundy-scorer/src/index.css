@@ -82,3 +82,9 @@ caption {
   padding: 10px;
   font-weight: bold;
 }
+
+/* Winning player's total — marked with a 🏆 too, so it's not color-only. */
+.winner {
+  font-weight: bold;
+  background-color: color-mix(in srgb, var(--accent) 18%, transparent);
+}
