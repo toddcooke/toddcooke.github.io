@@ -164,6 +164,7 @@ function renderCategory(category) {
 
   for (const p of state.players) {
     const value = p.scores[category.key] || 0;
+    const badge = hexToken(runningTotalUpTo(p, category.key), p.color);
     let valueNode;
 
     let inputControl;
@@ -185,8 +186,6 @@ function renderCategory(category) {
         el('button', { class: 'hex-btn hex', text: '＋', onclick: () => bump(1) }),
       ]);
     }
-
-    const badge = hexToken(runningTotalUpTo(p, category.key), p.color);
 
     app.appendChild(el('div', { class: 'player-row' }, [
       badge,
