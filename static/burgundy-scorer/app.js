@@ -136,9 +136,66 @@ seedTwoPlayers();
 render();
 
 // --- Temporary stubs (replaced in Tasks 4-6) ---
+function setScore(player, key, value) {
+  const v = Math.max(0, Number(value) || 0);
+  player.scores = { ...player.scores, [key]: v };
+}
+
+function runningTotalUpTo(player, key) {
+  // Sum of categories entered up to and including `key`, in CATEGORIES order.
+  let sum = 0;
+  for (const c of CATEGORIES) {
+    sum += categoryPoints(c.key, player.scores[c.key]);
+    if (c.key === key) break;
+  }
+  return sum;
+}
+
 function renderCategory(category) {
   app.appendChild(el('h2', { class: 'step-title', text: category.label }));
-  app.appendChild(navBar());
+  const desc = {
+    track: 'Each player's running total already on the board',
+    goods: 'Each unsold goods tile = 1 point',
+    silverlings: 'Each remaining silverling = 1 point',
+    workers: 'Every two worker tiles = 1 point',
+    yellow: 'Total points from VP-bearing yellow tiles',
+  }[category.key];
+  app.appendChild(el('p', { class: 'step-desc', text: desc }));
+
+  for (const p of state.players) {
+    const value = p.scores[category.key] || 0;
+    let valueNode;
+
+    let inputControl;
+    if (category.input === 'number') {
+      inputControl = el('input', {
+        class: 'num-input', type: 'number', min: '0', inputmode: 'numeric', value,
+        oninput: (e) => { setScore(p, category.key, e.target.value); badge.textContent = runningTotalUpTo(p, category.key); },
+      });
+    } else {
+      valueNode = el('span', { class: 'value', text: String(value) });
+      const bump = (delta) => {
+        setScore(p, category.key, (p.scores[category.key] || 0) + delta);
+        valueNode.textContent = p.scores[category.key];
+        badge.textContent = runningTotalUpTo(p, category.key);
+      };
+      inputControl = el('div', { class: 'stepper' }, [
+        el('button', { class: 'hex-btn hex', text: '−', onclick: () => bump(-1) }),
+        valueNode,
+        el('button', { class: 'hex-btn hex', text: '＋', onclick: () => bump(1) }),
+      ]);
+    }
+
+    const badge = hexToken(runningTotalUpTo(p, category.key), p.color);
+
+    app.appendChild(el('div', { class: 'player-row' }, [
+      badge,
+      el('span', { class: 'name', text: p.name }),
+      inputControl,
+    ]));
+  }
+
+  app.appendChild(navBar({ nextLabel: 'Next' }));
 }
 function renderTiebreaker() {
   app.appendChild(el('h2', { class: 'step-title', text: 'Tiebreaker' }));
