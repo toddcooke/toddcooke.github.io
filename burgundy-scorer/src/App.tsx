@@ -7,9 +7,23 @@ interface Player {
     unsoldGoodsTiles: number; // 1 VP each
     silverCoins: number;      // 1 VP each
     workerChipsPair: number;  // 1 VP per pair
+    goodsTypesSold: number;        // monastery #15: 2 VP per goods type sold
+    buildingMonasteryMatches: number; // monastery #16-23/#29: 4 VP per matching building
+    livestockTypes: number;        // monastery #24: 4 VP per distinct livestock type
+    goodsSold: number;             // monastery #25: 1 VP per goods tile sold
+    bonusTilesOwned: number;       // monastery #26: 3 VP per bonus tile owned
 }
 
-type NumericKey = "boardVp" | "unsoldGoodsTiles" | "silverCoins" | "workerChipsPair";
+type NumericKey =
+    | "boardVp"
+    | "unsoldGoodsTiles"
+    | "silverCoins"
+    | "workerChipsPair"
+    | "goodsTypesSold"
+    | "buildingMonasteryMatches"
+    | "livestockTypes"
+    | "goodsSold"
+    | "bonusTilesOwned";
 
 // One entry per table row: a label and which Player field it edits.
 const SCORE_ROWS: { label: string; key: NumericKey }[] = [
@@ -27,6 +41,11 @@ function makePlayer(name: string): Player {
         unsoldGoodsTiles: 0,
         silverCoins: 0,
         workerChipsPair: 0,
+        goodsTypesSold: 0,
+        buildingMonasteryMatches: 0,
+        livestockTypes: 0,
+        goodsSold: 0,
+        bonusTilesOwned: 0,
     };
 }
 
