@@ -15,4 +15,7 @@ hugo.darwin
 hugo.linux
 
 # Temporary lock file while building
-/.hugo_build.lock.superpowers/
+/.hugo_build.lock
+
+# Superpowers skill working files
+.superpowers/
