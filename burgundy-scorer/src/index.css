@@ -146,3 +146,12 @@ button {
 .table-scroll input[type="text"] {
   width: 7rem;
 }
+
+/* Compact per-player remove button in the column header. */
+.remove-player {
+  min-height: 0;
+  margin: 0 0 0 0.35rem;
+  padding: 0.15rem 0.4rem;
+  font-size: 14px;
+  line-height: 1;
+}
