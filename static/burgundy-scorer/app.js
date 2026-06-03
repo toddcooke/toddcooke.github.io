@@ -219,5 +219,45 @@ function renderTiebreaker() {
 }
 function renderResults() {
   app.appendChild(el('h2', { class: 'step-title', text: 'Final Scores' }));
-  app.appendChild(navBar());
+
+  const ranked = ranking(state.players);
+  const byId = Object.fromEntries(ranked.map(p => [p.id, p]));
+  const order = state.players;   // keep column order stable (setup order)
+
+  const table = el('table', { class: 'results' });
+
+  // Header: player names in their colors.
+  const head = el('tr', {}, [el('th', { text: '' })]);
+  for (const p of order) head.appendChild(el('th', { style: `color:${p.color}`, text: p.name }));
+  table.appendChild(head);
+
+  // One row per category, showing points contributed (workers already halved).
+  for (const c of CATEGORIES) {
+    const row = el('tr', {}, [el('td', { text: c.label })]);
+    for (const p of order) row.appendChild(el('td', { text: String(categoryPoints(c.key, p.scores[c.key])) }));
+    table.appendChild(row);
+  }
+  app.appendChild(table);
+
+  // Medals row (1st/2nd/3rd) above totals, in column order.
+  const medals = el('div', { class: 'medals' });
+  for (const p of order) {
+    const r = byId[p.id].rank;
+    const label = r === 1 ? '1ST' : r === 2 ? '2ND' : r === 3 ? '3RD' : `${r}TH`;
+    const cls = r <= 3 ? `medal hex r${r}` : 'medal hex';
+    medals.appendChild(el('span', { class: cls, style: r > 3 ? `background:${p.color}` : null,
+      text: byId[p.id].tied ? `${label} (tie)` : label }));
+  }
+  app.appendChild(medals);
+
+  const totals = el('table', { class: 'results' }, [
+    el('tr', { class: 'total' }, [
+      el('td', { text: 'TOTAL' }),
+      ...order.map(p => el('td', { style: `color:${p.color}`, text: String(byId[p.id].total) })),
+    ]),
+  ]);
+  app.appendChild(totals);
+
+  app.appendChild(el('button', { class: 'new-game', text: 'New game', onclick: () => resetGame() }));
+  // No nav bar on the results screen; "New game" returns to setup.
 }
