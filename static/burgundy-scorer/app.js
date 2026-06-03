@@ -1,3 +1,4 @@
+// categoryPoints/computeTotal/ranking are used by the category & results steps (added in later tasks).
 import { CATEGORIES, categoryPoints, computeTotal, ranking, needsTiebreaker } from './scoring.js';
 
 const COLORS = ['#6f8a3f', '#3d6e9c', '#c9a227', '#8a5a2b', '#7d7f86', '#9c3b35'];
@@ -29,10 +30,12 @@ function el(tag, props = {}, children = []) {
     if (k === 'class') node.className = v;
     else if (k === 'text') node.textContent = v;
     else if (k.startsWith('on') && typeof v === 'function') node.addEventListener(k.slice(2), v);
+    else if (typeof v === 'boolean') { if (v) node.setAttribute(k, ''); }
     else if (v !== null && v !== undefined) node.setAttribute(k, v);
   }
   for (const child of [].concat(children)) {
-    if (child) node.appendChild(typeof child === 'string' ? document.createTextNode(child) : child);
+    if (child === null || child === undefined || child === false) continue;
+    node.appendChild(child instanceof Node ? child : document.createTextNode(String(child)));
   }
   return node;
 }
@@ -74,11 +77,17 @@ function renderSetup() {
 
   for (const p of state.players) {
     const swatches = el('div', { class: 'swatches' },
-      COLORS.map(c => el('span', {
-        class: 'swatch' + (c === p.color ? ' selected' : ''),
-        style: `background:${c}`,
-        onclick: () => { p.color = c; render(); },
-      })));
+      COLORS.map(c => {
+        const takenByOther = state.players.some(other => other !== p && other.color === c);
+        let cls = 'swatch';
+        if (c === p.color) cls += ' selected';
+        else if (takenByOther) cls += ' taken';
+        return el('span', {
+          class: cls,
+          style: `background:${c}`,
+          onclick: takenByOther ? null : () => { p.color = c; render(); },
+        });
+      }));
 
     app.appendChild(el('div', { class: 'player-row' }, [
       hexToken(state.players.indexOf(p) + 1, p.color),
