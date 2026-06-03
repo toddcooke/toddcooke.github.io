@@ -18,6 +18,7 @@ function placeLabel(place: number): string {
 }
 
 const STORAGE_KEY = "burgundy-scorer:players";
+const MAX_PLAYERS = 4; // Castles of Burgundy supports up to 4 players.
 
 // A fresh calculator: one blank player. Used on first load and on Clear.
 function freshPlayers(): Player[] {
@@ -32,7 +33,7 @@ function loadPlayers(): Player[] {
         if (!raw) return freshPlayers();
         const parsed: unknown = JSON.parse(raw);
         if (!Array.isArray(parsed) || parsed.length === 0) return freshPlayers();
-        return parsed.map(p => ({ ...makePlayer(p?.name ?? "Player"), ...p }));
+        return parsed.slice(0, MAX_PLAYERS).map(p => ({ ...makePlayer(p?.name ?? "Player"), ...p }));
     } catch {
         return freshPlayers();
     }
@@ -67,8 +68,13 @@ export default function App() {
             <h1>Castles of Burgundy Score Calculator</h1>
 
             <button
+                disabled={players.length >= MAX_PLAYERS}
                 onClick={() =>
-                    setPlayers(prev => [...prev, makePlayer(`Player ${prev.length + 1}`)])
+                    setPlayers(prev =>
+                        prev.length >= MAX_PLAYERS
+                            ? prev
+                            : [...prev, makePlayer(`Player ${prev.length + 1}`)],
+                    )
                 }
             >
                 Add player
@@ -100,6 +106,7 @@ export default function App() {
                             <button
                                 type="button"
                                 className="remove-player"
+                                disabled={players.length <= 1}
                                 aria-label={`Remove ${player.name}`}
                                 title={`Remove ${player.name}`}
                                 onClick={() => removePlayer(player.id)}
