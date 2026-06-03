@@ -25,12 +25,19 @@ type NumericKey =
     | "goodsSold"
     | "bonusTilesOwned";
 
-// One entry per table row: a label and which Player field it edits.
-const SCORE_ROWS: { label: string; key: NumericKey }[] = [
-    { label: "Board VP", key: "boardVp" },
-    { label: "Unsold goods tiles", key: "unsoldGoodsTiles" },
-    { label: "Silver coins", key: "silverCoins" },
-    { label: "Worker chips (pairs)", key: "workerChipsPair" },
+// One entry per table row: a label, the Player field it edits, and VP per unit.
+const SCORE_ROWS: { label: string; key: NumericKey; vpPerUnit: number }[] = [
+    { label: "Board VP", key: "boardVp", vpPerUnit: 1 },
+    { label: "Unsold goods tiles", key: "unsoldGoodsTiles", vpPerUnit: 1 },
+    { label: "Silver coins", key: "silverCoins", vpPerUnit: 1 },
+    { label: "Worker chips (pairs)", key: "workerChipsPair", vpPerUnit: 1 },
+    // 2019-edition monastery tiles that score at end of game. Enter the count
+    // only if you own that monastery; leave 0 otherwise.
+    { label: "Goods variety monastery (2 VP/type)", key: "goodsTypesSold", vpPerUnit: 2 },
+    { label: "Building monastery (4 VP/building)", key: "buildingMonasteryMatches", vpPerUnit: 4 },
+    { label: "Livestock variety monastery (4 VP/type)", key: "livestockTypes", vpPerUnit: 4 },
+    { label: "Goods sold monastery (1 VP/tile)", key: "goodsSold", vpPerUnit: 1 },
+    { label: "Bonus-tile monastery (3 VP/tile)", key: "bonusTilesOwned", vpPerUnit: 3 },
 ];
 
 function makePlayer(name: string): Player {
@@ -49,9 +56,9 @@ function makePlayer(name: string): Player {
     };
 }
 
-// Total VP: every category contributes 1 VP per unit.
+// Total VP: each category's count multiplied by its VP-per-unit.
 function playerTotal(p: Player): number {
-    return SCORE_ROWS.reduce((sum, row) => sum + p[row.key], 0);
+    return SCORE_ROWS.reduce((sum, row) => sum + p[row.key] * row.vpPerUnit, 0);
 }
 
 export default function App() {
