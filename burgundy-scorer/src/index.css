@@ -89,19 +89,29 @@ caption {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 3.2rem;
-  height: 3.2rem;
+  width: 3.4rem;
+  height: 3.4rem;
   clip-path: polygon(25% 0, 75% 0, 100% 50%, 75% 100%, 25% 100%, 0 50%);
-  color: #1a1613;
-  font-weight: 700;
-  font-size: 0.8rem;
+  color: #2a2118;
+  font-weight: 800;
+  font-size: 0.78rem;
+  letter-spacing: 0.03em;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.4); /* engraved look */
+  /* Bevel: top shine, bottom shade, thin rim. Inset shadows stay inside the clip. */
+  box-shadow:
+    inset 0 2px 3px rgba(255, 255, 255, 0.5),
+    inset 0 -4px 5px rgba(0, 0, 0, 0.28),
+    inset 0 0 0 2px rgba(0, 0, 0, 0.08);
+  /* Outer drop shadow follows the hex outline (a box-shadow would be clipped away). */
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.35));
 }
 
-.medal.rank-1 { background: #d4af37; } /* gold */
-.medal.rank-2 { background: #b9bcc2; } /* silver */
-.medal.rank-3 { background: #c08552; } /* bronze */
-.medal.rank-4 { background: #9098a0; } /* iron */
-.medal.rank-other { background: #cfcfcf; }
+/* Metallic sheen: bright highlight -> base tone -> darker edge. */
+.medal.rank-1 { background: radial-gradient(circle at 33% 28%, #f7e9ad, #d4af37 48%, #9b7d1f); } /* gold */
+.medal.rank-2 { background: radial-gradient(circle at 33% 28%, #f5f7f9, #c2c6cc 48%, #888d94); } /* silver */
+.medal.rank-3 { background: radial-gradient(circle at 33% 28%, #e7b98c, #c08552 48%, #8a5a30); } /* bronze */
+.medal.rank-4 { background: radial-gradient(circle at 33% 28%, #c4cbd2, #9098a0 48%, #646b72); } /* iron */
+.medal.rank-other { background: radial-gradient(circle at 33% 28%, #ededed, #cfcfcf 48%, #a6a6a6); }
 
 /* Actions */
 button {
@@ -114,6 +124,11 @@ button {
   background: var(--surface);
   color: var(--text);
   cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
 }
 
 /* Horizontal scroll so wide tables never break the page layout on phones. */
