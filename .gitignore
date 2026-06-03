@@ -6,6 +6,9 @@
 /assets/jsconfig.json
 hugo_stats.json
 
+# Generated React build output (built by Vite into Hugo's static dir)
+/static/burgundy-scorer/
+
 # Executable may be added to repository
 hugo.exe
 hugo.darwin
