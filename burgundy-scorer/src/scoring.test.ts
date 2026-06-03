@@ -14,20 +14,36 @@ function player(overrides: Partial<Player>): Player {
 }
 
 describe("playerTotal", () => {
-    it("sums numeric categories with their VP multipliers", () => {
-        // 10 board + 4 goods-types ×2 + 3 bonus-tiles ×3 = 10 + 8 + 9
-        const p = player({ boardVp: 10, goodsTypesSold: 4, bonusTilesOwned: 3 });
+    it("sums base categories plus monastery tiles at their rates", () => {
+        // 10 board + #15 goods-variety 4×2 + #26 bonus-tiles 3×3 = 10 + 8 + 9
+        const p = player({
+            boardVp: 10,
+            monasteries: [
+                { tile: "15", count: 4 },
+                { tile: "26", count: 3 },
+            ],
+        });
         expect(playerTotal(p)).toBe(27);
     });
 
     it("applies the building monastery 4× and livestock 4× multipliers", () => {
-        // Each building monastery (#16–23/#29) scores 4 VP per matching building.
-        const p = player({ building17: 2, building22: 1, livestockTypes: 3 });
+        const p = player({
+            monasteries: [
+                { tile: "17", count: 2 },
+                { tile: "22", count: 1 },
+                { tile: "24", count: 3 },
+            ],
+        });
         expect(playerTotal(p)).toBe(2 * 4 + 1 * 4 + 3 * 4);
     });
 
-    it("ignores tiebreaker-only fields", () => {
-        const p = player({ boardVp: 5, emptyHexSpaces: 9, bridgePosition: 9 });
+    it("ignores tiebreaker fields and unknown monastery tiles", () => {
+        const p = player({
+            boardVp: 5,
+            emptyHexSpaces: 9,
+            bridgePosition: 9,
+            monasteries: [{ tile: "999", count: 5 }],
+        });
         expect(playerTotal(p)).toBe(5);
     });
 });

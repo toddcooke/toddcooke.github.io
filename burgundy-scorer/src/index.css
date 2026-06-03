@@ -109,6 +109,77 @@ caption {
 }
 
 /* Metallic sheen: bright highlight -> base tone -> darker edge. */
+.muted {
+  color: var(--muted);
+}
+
+/* Monastery tiles section (add-on-demand list). */
+.monasteries {
+  margin-top: 2rem;
+}
+
+.monasteries h2 {
+  font-size: 1.15rem;
+  margin: 0 0 0.5rem;
+}
+
+.monastery-list {
+  list-style: none;
+  margin: 0 0 1rem;
+  padding: 0;
+}
+
+.monastery-list li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.monastery-list .m-tile {
+  font-weight: 600;
+  flex: 1 1 14rem;
+}
+
+.monastery-list .m-owner {
+  color: var(--muted);
+  min-width: 5rem;
+}
+
+.monastery-list .m-vp {
+  color: var(--muted);
+  min-width: 4.5rem;
+}
+
+.monastery-list input[type="number"] {
+  width: 4.5rem;
+  font-size: 16px;
+  padding: 0.3rem 0.4rem;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--surface);
+  color: var(--text);
+}
+
+.monastery-add {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.monastery-add select {
+  font-size: 16px;
+  min-height: 44px;
+  padding: 0.4rem 0.6rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--text);
+}
+
 .medal.rank-1 { background: radial-gradient(circle at 33% 28%, #f7e9ad, #d4af37 48%, #9b7d1f); } /* gold */
 .medal.rank-2 { background: radial-gradient(circle at 33% 28%, #f5f7f9, #c2c6cc 48%, #888d94); } /* silver */
 .medal.rank-3 { background: radial-gradient(circle at 33% 28%, #e7b98c, #c08552 48%, #8a5a30); } /* bronze */
@@ -176,12 +247,6 @@ button:disabled {
 
 .table-scroll input[type="text"] {
   width: 7rem;
-}
-
-/* A monastery tile already claimed by another player. */
-.table-scroll input:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
 }
 
 /* Compact per-player remove button in the column header.
