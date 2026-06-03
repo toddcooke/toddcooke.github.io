@@ -121,26 +121,38 @@ export default function App() {
                 </tr>
                 </thead>
                 <tbody>
-                {SCORE_ROWS.map(row => (
-                    <tr key={row.key}>
-                        <th scope="row">{row.label}</th>
-                        {players.map(player => (
-                            <td key={player.id}>
-                                <input
-                                    type="number"
-                                    min={0}
-                                    inputMode="numeric"
-                                    value={player[row.key]}
-                                    aria-label={`${row.label} for ${player.name}`}
-                                    onFocus={e => e.target.select()}
-                                    onChange={e =>
-                                        updateField(player.id, row.key, Number(e.target.value))
-                                    }
-                                />
-                            </td>
-                        ))}
-                    </tr>
-                ))}
+                {SCORE_ROWS.map(row => {
+                    // Monastery tiles are unique: once one player has a value, the
+                    // others' cells in this row are disabled (the tile is claimed).
+                    const owner = row.monastery
+                        ? players.find(p => p[row.key] > 0)
+                        : undefined;
+                    return (
+                        <tr key={row.key}>
+                            <th scope="row">{row.label}</th>
+                            {players.map(player => {
+                                const disabled = !!owner && owner.id !== player.id;
+                                return (
+                                    <td key={player.id}>
+                                        <input
+                                            type="number"
+                                            min={0}
+                                            inputMode="numeric"
+                                            value={player[row.key]}
+                                            disabled={disabled}
+                                            title={disabled ? `Claimed by ${owner!.name}` : undefined}
+                                            aria-label={`${row.label} for ${player.name}`}
+                                            onFocus={e => e.target.select()}
+                                            onChange={e =>
+                                                updateField(player.id, row.key, Number(e.target.value))
+                                            }
+                                        />
+                                    </td>
+                                );
+                            })}
+                        </tr>
+                    );
+                })}
                 </tbody>
                 <tfoot>
                 <tr>

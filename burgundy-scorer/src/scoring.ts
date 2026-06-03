@@ -9,7 +9,16 @@ export interface Player {
     silverCoins: number;      // 1 VP each
     workerChipsPair: number;  // 1 VP per pair
     goodsTypesSold: number;        // monastery #15: 2 VP per goods type sold
-    buildingMonasteryMatches: number; // monastery #16-23/#29: 4 VP per matching building
+    // monasteries #16-23 + #29: 4 VP per building of that tile's type (each a unique tile)
+    building16: number;
+    building17: number;
+    building18: number;
+    building19: number;
+    building20: number;
+    building21: number;
+    building22: number;
+    building23: number;
+    building29: number;
     livestockTypes: number;        // monastery #24: 4 VP per distinct livestock type
     goodsSold: number;             // monastery #25: 1 VP per goods tile sold
     bonusTilesOwned: number;       // monastery #26: 3 VP per bonus tile owned
@@ -24,24 +33,46 @@ export type NumericKey =
     | "silverCoins"
     | "workerChipsPair"
     | "goodsTypesSold"
-    | "buildingMonasteryMatches"
+    | "building16"
+    | "building17"
+    | "building18"
+    | "building19"
+    | "building20"
+    | "building21"
+    | "building22"
+    | "building23"
+    | "building29"
     | "livestockTypes"
     | "goodsSold"
     | "bonusTilesOwned";
 
 // One entry per table row: a label, the Player field it edits, and VP per unit.
-export const SCORE_ROWS: { label: string; key: NumericKey; vpPerUnit: number }[] = [
+// `monastery` rows are unique tiles — at most one player can own each.
+export const SCORE_ROWS: {
+    label: string;
+    key: NumericKey;
+    vpPerUnit: number;
+    monastery?: boolean;
+}[] = [
     { label: "Board VP", key: "boardVp", vpPerUnit: 1 },
     { label: "Unsold goods tiles", key: "unsoldGoodsTiles", vpPerUnit: 1 },
     { label: "Silver coins", key: "silverCoins", vpPerUnit: 1 },
     { label: "Worker chips (pairs)", key: "workerChipsPair", vpPerUnit: 1 },
-    // 2019-edition monastery tiles that score at end of game. Enter the count
-    // only if you own that monastery; leave 0 otherwise.
-    { label: "#15 Goods variety monastery (2 VP/type)", key: "goodsTypesSold", vpPerUnit: 2 },
-    { label: "#16–23, #29 Building monastery (4 VP/building)", key: "buildingMonasteryMatches", vpPerUnit: 4 },
-    { label: "#24 Livestock variety monastery (4 VP/type)", key: "livestockTypes", vpPerUnit: 4 },
-    { label: "#25 Goods sold monastery (1 VP/tile)", key: "goodsSold", vpPerUnit: 1 },
-    { label: "#26 Bonus-tile monastery (3 VP/tile)", key: "bonusTilesOwned", vpPerUnit: 3 },
+    // 2019-edition monastery tiles that score at end of game. Each is a single
+    // unique tile, so only one player can own it (enforced in the UI).
+    { label: "#15 Goods variety monastery (2 VP/type)", key: "goodsTypesSold", vpPerUnit: 2, monastery: true },
+    { label: "#16 Building monastery (4 VP/building)", key: "building16", vpPerUnit: 4, monastery: true },
+    { label: "#17 Building monastery (4 VP/building)", key: "building17", vpPerUnit: 4, monastery: true },
+    { label: "#18 Building monastery (4 VP/building)", key: "building18", vpPerUnit: 4, monastery: true },
+    { label: "#19 Building monastery (4 VP/building)", key: "building19", vpPerUnit: 4, monastery: true },
+    { label: "#20 Building monastery (4 VP/building)", key: "building20", vpPerUnit: 4, monastery: true },
+    { label: "#21 Building monastery (4 VP/building)", key: "building21", vpPerUnit: 4, monastery: true },
+    { label: "#22 Building monastery (4 VP/building)", key: "building22", vpPerUnit: 4, monastery: true },
+    { label: "#23 Building monastery (4 VP/building)", key: "building23", vpPerUnit: 4, monastery: true },
+    { label: "#24 Livestock variety monastery (4 VP/type)", key: "livestockTypes", vpPerUnit: 4, monastery: true },
+    { label: "#25 Goods sold monastery (1 VP/tile)", key: "goodsSold", vpPerUnit: 1, monastery: true },
+    { label: "#26 Bonus-tile monastery (3 VP/tile)", key: "bonusTilesOwned", vpPerUnit: 3, monastery: true },
+    { label: "#29 Building monastery (4 VP/building)", key: "building29", vpPerUnit: 4, monastery: true },
 ];
 
 // Tiebreaker-only fields (never added to the total).
@@ -60,7 +91,15 @@ export function makePlayer(name: string): Player {
         silverCoins: 0,
         workerChipsPair: 0,
         goodsTypesSold: 0,
-        buildingMonasteryMatches: 0,
+        building16: 0,
+        building17: 0,
+        building18: 0,
+        building19: 0,
+        building20: 0,
+        building21: 0,
+        building22: 0,
+        building23: 0,
+        building29: 0,
         livestockTypes: 0,
         goodsSold: 0,
         bonusTilesOwned: 0,
