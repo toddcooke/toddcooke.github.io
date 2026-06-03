@@ -3,6 +3,8 @@ import {
     type Player,
     SCORE_ROWS,
     TIEBREAKER_ROWS,
+    MONASTERY_TILES,
+    monasteryTile,
     makePlayer,
     playerTotal,
     ranking,
@@ -41,6 +43,8 @@ function loadPlayers(): Player[] {
 
 export default function App() {
     const [players, setPlayers] = useState<Player[]>(loadPlayers);
+    const [addTile, setAddTile] = useState("");
+    const [addOwner, setAddOwner] = useState("");
 
     // Persist to localStorage whenever players change (ignore quota/private-mode errors).
     useEffect(() => {
@@ -51,7 +55,7 @@ export default function App() {
         }
     }, [players]);
 
-    // Immutably update one field of one player by id.
+    // Immutably update one base field of one player by id.
     function updateField<K extends keyof Player>(id: string, key: K, value: Player[K]) {
         setPlayers(prev => prev.map(p => (p.id === id ? { ...p, [key]: value } : p)));
     }
@@ -60,8 +64,42 @@ export default function App() {
         setPlayers(prev => prev.filter(p => p.id !== id));
     }
 
+    function addMonastery(ownerId: string, tile: string) {
+        setPlayers(prev =>
+            prev.map(p =>
+                p.id === ownerId ? { ...p, monasteries: [...p.monasteries, { tile, count: 1 }] } : p,
+            ),
+        );
+    }
+
+    function setMonasteryCount(ownerId: string, tile: string, count: number) {
+        setPlayers(prev =>
+            prev.map(p =>
+                p.id === ownerId
+                    ? { ...p, monasteries: p.monasteries.map(h => (h.tile === tile ? { ...h, count } : h)) }
+                    : p,
+            ),
+        );
+    }
+
+    function removeMonastery(ownerId: string, tile: string) {
+        setPlayers(prev =>
+            prev.map(p =>
+                p.id === ownerId ? { ...p, monasteries: p.monasteries.filter(h => h.tile !== tile) } : p,
+            ),
+        );
+    }
+
     const places = ranking(players);
     const tiebreakers = neededTiebreakers(players);
+
+    // Monastery tiles already owned (so each unique tile is offered only once).
+    const ownedTileIds = new Set(players.flatMap(p => p.monasteries.map(h => h.tile)));
+    const availableTiles = MONASTERY_TILES.filter(t => !ownedTileIds.has(t.id));
+    const holdings = players
+        .flatMap(p => p.monasteries.map(h => ({ player: p, holding: h, tile: monasteryTile(h.tile)! })))
+        .filter(x => x.tile)
+        .sort((a, b) => Number(a.tile.id) - Number(b.tile.id));
 
     return (
         <div>
@@ -83,9 +121,7 @@ export default function App() {
                 onClick={() => {
                     if (window.confirm("Reset all scores? Players are kept.")) {
                         // Zero every score but keep each player's id and name.
-                        setPlayers(prev =>
-                            prev.map(p => ({ ...makePlayer(p.name), id: p.id })),
-                        );
+                        setPlayers(prev => prev.map(p => ({ ...makePlayer(p.name), id: p.id })));
                     }
                 }}
             >
@@ -121,38 +157,26 @@ export default function App() {
                 </tr>
                 </thead>
                 <tbody>
-                {SCORE_ROWS.map(row => {
-                    // Monastery tiles are unique: once one player has a value, the
-                    // others' cells in this row are disabled (the tile is claimed).
-                    const owner = row.monastery
-                        ? players.find(p => p[row.key] > 0)
-                        : undefined;
-                    return (
-                        <tr key={row.key}>
-                            <th scope="row">{row.label}</th>
-                            {players.map(player => {
-                                const disabled = !!owner && owner.id !== player.id;
-                                return (
-                                    <td key={player.id}>
-                                        <input
-                                            type="number"
-                                            min={0}
-                                            inputMode="numeric"
-                                            value={player[row.key]}
-                                            disabled={disabled}
-                                            title={disabled ? `Claimed by ${owner!.name}` : undefined}
-                                            aria-label={`${row.label} for ${player.name}`}
-                                            onFocus={e => e.target.select()}
-                                            onChange={e =>
-                                                updateField(player.id, row.key, Number(e.target.value))
-                                            }
-                                        />
-                                    </td>
-                                );
-                            })}
-                        </tr>
-                    );
-                })}
+                {SCORE_ROWS.map(row => (
+                    <tr key={row.key}>
+                        <th scope="row">{row.label}</th>
+                        {players.map(player => (
+                            <td key={player.id}>
+                                <input
+                                    type="number"
+                                    min={0}
+                                    inputMode="numeric"
+                                    value={player[row.key]}
+                                    aria-label={`${row.label} for ${player.name}`}
+                                    onFocus={e => e.target.select()}
+                                    onChange={e =>
+                                        updateField(player.id, row.key, Number(e.target.value))
+                                    }
+                                />
+                            </td>
+                        ))}
+                    </tr>
+                ))}
                 </tbody>
                 <tfoot>
                 <tr>
@@ -206,6 +230,82 @@ export default function App() {
                 </tfoot>
             </table>
             </div>
+
+            <section className="monasteries">
+                <h2>Monastery tiles</h2>
+                {holdings.length === 0 ? (
+                    <p className="muted">No monastery tiles added yet.</p>
+                ) : (
+                    <ul className="monastery-list">
+                        {holdings.map(({ player, holding, tile }) => (
+                            <li key={`${player.id}:${tile.id}`}>
+                                <span className="m-tile">{tile.label}</span>
+                                <span className="m-owner">{player.name}</span>
+                                <input
+                                    type="number"
+                                    min={0}
+                                    inputMode="numeric"
+                                    value={holding.count}
+                                    aria-label={`${tile.unitLabel} for ${player.name} (${tile.label})`}
+                                    onFocus={e => e.target.select()}
+                                    onChange={e =>
+                                        setMonasteryCount(player.id, tile.id, Number(e.target.value))
+                                    }
+                                />
+                                <span className="m-vp">= {holding.count * tile.vpPerUnit} VP</span>
+                                <button
+                                    type="button"
+                                    className="remove-player"
+                                    aria-label={`Remove ${tile.label} from ${player.name}`}
+                                    title="Remove this monastery"
+                                    onClick={() => removeMonastery(player.id, tile.id)}
+                                >
+                                    ✕
+                                </button>
+                            </li>
+                        ))}
+                    </ul>
+                )}
+
+                {availableTiles.length > 0 && players.length > 0 && (
+                    <div className="monastery-add">
+                        <select
+                            aria-label="Monastery tile"
+                            value={addTile}
+                            onChange={e => setAddTile(e.target.value)}
+                        >
+                            <option value="">Choose tile…</option>
+                            {availableTiles.map(t => (
+                                <option key={t.id} value={t.id}>
+                                    {t.label}
+                                </option>
+                            ))}
+                        </select>
+                        <select
+                            aria-label="Owner"
+                            value={addOwner}
+                            onChange={e => setAddOwner(e.target.value)}
+                        >
+                            <option value="">Choose player…</option>
+                            {players.map(p => (
+                                <option key={p.id} value={p.id}>
+                                    {p.name}
+                                </option>
+                            ))}
+                        </select>
+                        <button
+                            type="button"
+                            disabled={!addTile || !addOwner}
+                            onClick={() => {
+                                addMonastery(addOwner, addTile);
+                                setAddTile("");
+                            }}
+                        >
+                            Add monastery
+                        </button>
+                    </div>
+                )}
+            </section>
         </div>
     );
 }

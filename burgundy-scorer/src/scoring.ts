@@ -1,6 +1,13 @@
 // Pure scoring logic for the Castles of Burgundy (2019) calculator.
 // Kept free of React/DOM so it can be unit-tested in isolation.
 
+// A monastery tile a player owns, plus the relevant count (buildings, goods
+// types, etc.). Each tile is unique, so it lives on exactly one player.
+export interface MonasteryHolding {
+    tile: string; // MonasteryTile id
+    count: number;
+}
+
 export interface Player {
     id: string;
     name: string;
@@ -8,72 +15,55 @@ export interface Player {
     unsoldGoodsTiles: number; // 1 VP each
     silverCoins: number;      // 1 VP each
     workerChipsPair: number;  // 1 VP per pair
-    goodsTypesSold: number;        // monastery #15: 2 VP per goods type sold
-    // monasteries #16-23 + #29: 4 VP per building of that tile's type (each a unique tile)
-    building16: number;
-    building17: number;
-    building18: number;
-    building19: number;
-    building20: number;
-    building21: number;
-    building22: number;
-    building23: number;
-    building29: number;
-    livestockTypes: number;        // monastery #24: 4 VP per distinct livestock type
-    goodsSold: number;             // monastery #25: 1 VP per goods tile sold
-    bonusTilesOwned: number;       // monastery #26: 3 VP per bonus tile owned
+    monasteries: MonasteryHolding[];
     // Tiebreakers (never scored): used only when totals are equal.
-    emptyHexSpaces: number;        // fewer wins
-    bridgePosition: number;        // higher = farther behind, wins
+    emptyHexSpaces: number;   // fewer wins
+    bridgePosition: number;   // higher = farther behind, wins
 }
 
-export type NumericKey =
-    | "boardVp"
-    | "unsoldGoodsTiles"
-    | "silverCoins"
-    | "workerChipsPair"
-    | "goodsTypesSold"
-    | "building16"
-    | "building17"
-    | "building18"
-    | "building19"
-    | "building20"
-    | "building21"
-    | "building22"
-    | "building23"
-    | "building29"
-    | "livestockTypes"
-    | "goodsSold"
-    | "bonusTilesOwned";
+export type NumericKey = "boardVp" | "unsoldGoodsTiles" | "silverCoins" | "workerChipsPair";
 
-// One entry per table row: a label, the Player field it edits, and VP per unit.
-// `monastery` rows are unique tiles — at most one player can own each.
-export const SCORE_ROWS: {
-    label: string;
-    key: NumericKey;
-    vpPerUnit: number;
-    monastery?: boolean;
-}[] = [
-    { label: "Board VP", key: "boardVp", vpPerUnit: 1 },
-    { label: "Unsold goods tiles", key: "unsoldGoodsTiles", vpPerUnit: 1 },
-    { label: "Silver coins", key: "silverCoins", vpPerUnit: 1 },
-    { label: "Worker chips (pairs)", key: "workerChipsPair", vpPerUnit: 1 },
-    // 2019-edition monastery tiles that score at end of game. Each is a single
-    // unique tile, so only one player can own it (enforced in the UI).
-    { label: "#15 Goods variety monastery (2 VP/type)", key: "goodsTypesSold", vpPerUnit: 2, monastery: true },
-    { label: "#16 Building monastery (4 VP/building)", key: "building16", vpPerUnit: 4, monastery: true },
-    { label: "#17 Building monastery (4 VP/building)", key: "building17", vpPerUnit: 4, monastery: true },
-    { label: "#18 Building monastery (4 VP/building)", key: "building18", vpPerUnit: 4, monastery: true },
-    { label: "#19 Building monastery (4 VP/building)", key: "building19", vpPerUnit: 4, monastery: true },
-    { label: "#20 Building monastery (4 VP/building)", key: "building20", vpPerUnit: 4, monastery: true },
-    { label: "#21 Building monastery (4 VP/building)", key: "building21", vpPerUnit: 4, monastery: true },
-    { label: "#22 Building monastery (4 VP/building)", key: "building22", vpPerUnit: 4, monastery: true },
-    { label: "#23 Building monastery (4 VP/building)", key: "building23", vpPerUnit: 4, monastery: true },
-    { label: "#24 Livestock variety monastery (4 VP/type)", key: "livestockTypes", vpPerUnit: 4, monastery: true },
-    { label: "#25 Goods sold monastery (1 VP/tile)", key: "goodsSold", vpPerUnit: 1, monastery: true },
-    { label: "#26 Bonus-tile monastery (3 VP/tile)", key: "bonusTilesOwned", vpPerUnit: 3, monastery: true },
-    { label: "#29 Building monastery (4 VP/building)", key: "building29", vpPerUnit: 4, monastery: true },
+// Base scoring rows (each worth 1 VP per unit), shown as the per-player grid.
+export const SCORE_ROWS: { label: string; key: NumericKey }[] = [
+    { label: "Board VP", key: "boardVp" },
+    { label: "Unsold goods tiles", key: "unsoldGoodsTiles" },
+    { label: "Silver coins", key: "silverCoins" },
+    { label: "Worker chips (pairs)", key: "workerChipsPair" },
 ];
+
+// 2019-edition monastery tiles that score at end of game. Each is a single
+// unique tile; `count` is multiplied by `vpPerUnit`. `unitLabel` describes what
+// the count means (for accessible labels).
+export interface MonasteryTile {
+    id: string;
+    label: string;
+    vpPerUnit: number;
+    unitLabel: string;
+}
+
+export const MONASTERY_TILES: MonasteryTile[] = [
+    { id: "15", label: "#15 Goods variety (2 VP / goods type sold)", vpPerUnit: 2, unitLabel: "goods types sold" },
+    { id: "16", label: "#16 Building (4 VP / matching building)", vpPerUnit: 4, unitLabel: "matching buildings" },
+    { id: "17", label: "#17 Building (4 VP / matching building)", vpPerUnit: 4, unitLabel: "matching buildings" },
+    { id: "18", label: "#18 Building (4 VP / matching building)", vpPerUnit: 4, unitLabel: "matching buildings" },
+    { id: "19", label: "#19 Building (4 VP / matching building)", vpPerUnit: 4, unitLabel: "matching buildings" },
+    { id: "20", label: "#20 Building (4 VP / matching building)", vpPerUnit: 4, unitLabel: "matching buildings" },
+    { id: "21", label: "#21 Building (4 VP / matching building)", vpPerUnit: 4, unitLabel: "matching buildings" },
+    { id: "22", label: "#22 Building (4 VP / matching building)", vpPerUnit: 4, unitLabel: "matching buildings" },
+    { id: "23", label: "#23 Building (4 VP / matching building)", vpPerUnit: 4, unitLabel: "matching buildings" },
+    { id: "24", label: "#24 Livestock variety (4 VP / livestock type)", vpPerUnit: 4, unitLabel: "livestock types" },
+    { id: "25", label: "#25 Goods sold (1 VP / goods tile sold)", vpPerUnit: 1, unitLabel: "goods sold" },
+    { id: "26", label: "#26 Bonus tiles (3 VP / bonus tile owned)", vpPerUnit: 3, unitLabel: "bonus tiles owned" },
+    { id: "29", label: "#29 Building (4 VP / matching building)", vpPerUnit: 4, unitLabel: "matching buildings" },
+];
+
+const TILE_VP: Record<string, number> = Object.fromEntries(
+    MONASTERY_TILES.map(t => [t.id, t.vpPerUnit]),
+);
+
+export function monasteryTile(id: string): MonasteryTile | undefined {
+    return MONASTERY_TILES.find(t => t.id === id);
+}
 
 // Tiebreaker-only fields (never added to the total).
 export type TiebreakerKey = "emptyHexSpaces" | "bridgePosition";
@@ -90,27 +80,20 @@ export function makePlayer(name: string): Player {
         unsoldGoodsTiles: 0,
         silverCoins: 0,
         workerChipsPair: 0,
-        goodsTypesSold: 0,
-        building16: 0,
-        building17: 0,
-        building18: 0,
-        building19: 0,
-        building20: 0,
-        building21: 0,
-        building22: 0,
-        building23: 0,
-        building29: 0,
-        livestockTypes: 0,
-        goodsSold: 0,
-        bonusTilesOwned: 0,
+        monasteries: [],
         emptyHexSpaces: 0,
         bridgePosition: 0,
     };
 }
 
-// Total VP: each category's count multiplied by its VP-per-unit.
+// Total VP: base rows (1 VP per unit) + each owned monastery's count × its rate.
 export function playerTotal(p: Player): number {
-    return SCORE_ROWS.reduce((sum, row) => sum + p[row.key] * row.vpPerUnit, 0);
+    const base = SCORE_ROWS.reduce((sum, row) => sum + p[row.key], 0);
+    const monastery = p.monasteries.reduce(
+        (sum, h) => sum + h.count * (TILE_VP[h.tile] ?? 0),
+        0,
+    );
+    return base + monastery;
 }
 
 // Ranking order: highest total, then fewest empty hex spaces, then farthest
