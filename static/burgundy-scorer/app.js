@@ -198,7 +198,24 @@ function renderCategory(category) {
 }
 function renderTiebreaker() {
   app.appendChild(el('h2', { class: 'step-title', text: 'Tiebreaker' }));
-  app.appendChild(navBar());
+  app.appendChild(el('p', { class: 'step-desc',
+    text: 'Some players are tied. Enter empty estate spaces — fewest wins.' }));
+
+  // Only the players involved in a tie need an entry, but showing all is simpler
+  // and harmless (untied players' tiebreak values never affect their rank).
+  for (const p of state.players) {
+    app.appendChild(el('div', { class: 'player-row' }, [
+      hexToken(computeTotal(p.scores), p.color),
+      el('span', { class: 'name', text: p.name }),
+      el('input', {
+        class: 'num-input', type: 'number', min: '0', inputmode: 'numeric',
+        value: p.tiebreak ?? '',
+        oninput: (e) => { p.tiebreak = e.target.value === '' ? null : Math.max(0, Number(e.target.value) || 0); },
+      }),
+    ]));
+  }
+
+  app.appendChild(navBar({ nextLabel: 'Results' }));
 }
 function renderResults() {
   app.appendChild(el('h2', { class: 'step-title', text: 'Final Scores' }));
