@@ -21,6 +21,25 @@ const STEPS = [
 
 const state = { players: [], stepIndex: 0 };
 
+const STORAGE_KEY = 'cob-scorer-v1';
+
+function save() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch { /* ignore */ }
+}
+
+function load() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return false;
+    const saved = JSON.parse(raw);
+    if (!saved || !Array.isArray(saved.players) || saved.players.length === 0) return false;
+    state.players = saved.players;
+    state.stepIndex = saved.stepIndex || 0;
+    nextId = saved.players.reduce((m, p) => Math.max(m, Number(String(p.id).slice(1)) + 1), 1);
+    return true;
+  } catch { return false; }
+}
+
 // ---- DOM helpers -----------------------------------------------------------
 const app = document.getElementById('app');
 
@@ -116,11 +135,14 @@ function render() {
   else if (step.kind === 'category') renderCategory(step.category);
   else if (step.kind === 'tiebreaker') renderTiebreaker();
   else if (step.kind === 'results') renderResults();
+  save();
 }
 
 function resetGame() {
+  try { localStorage.removeItem(STORAGE_KEY); } catch { /* ignore */ }
   state.players = [];
   state.stepIndex = 0;
+  seedTwoPlayers();
   render();
 }
 
@@ -131,8 +153,8 @@ function seedTwoPlayers() {
   state.players.push(newPlayer());
 }
 
-// Boot: start with two players on the setup screen.
-seedTwoPlayers();
+// Boot: restore an in-progress game, else start fresh with two players.
+if (!load()) seedTwoPlayers();
 render();
 
 function setScore(player, key, value) {
