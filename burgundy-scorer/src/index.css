@@ -88,3 +88,61 @@ caption {
   font-weight: bold;
   background-color: color-mix(in srgb, var(--accent) 18%, transparent);
 }
+
+/* Actions */
+button {
+  font-size: 16px;            /* >=16px avoids iOS focus zoom */
+  min-height: 44px;           /* comfortable touch target */
+  padding: 0.5rem 0.9rem;
+  margin: 0 0.5rem 1rem 0;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+}
+
+/* Horizontal scroll so wide tables never break the page layout on phones. */
+.table-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.table-scroll table {
+  border-collapse: collapse;
+}
+
+.table-scroll th,
+.table-scroll td {
+  padding: 0.4rem 0.6rem;
+  border: 1px solid var(--border);
+  text-align: left;
+  vertical-align: middle;
+}
+
+/* Keep the category labels visible while scrolling player columns sideways. */
+.table-scroll tr > :first-child {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  background: var(--bg);
+  box-shadow: 1px 0 0 var(--border); /* divider that survives sticky scrolling */
+}
+
+.table-scroll input {
+  font-size: 16px;            /* prevent iOS zoom on focus */
+  padding: 0.3rem 0.4rem;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--surface);
+  color: var(--text);
+}
+
+.table-scroll input[type="number"] {
+  width: 4.5rem;
+}
+
+.table-scroll input[type="text"] {
+  width: 7rem;
+}

@@ -165,6 +165,7 @@ export default function App() {
                 Clear
             </button>
 
+            <div className="table-scroll">
             <table>
                 <thead>
                 <tr>
@@ -239,6 +240,7 @@ export default function App() {
                 ))}
                 </tfoot>
             </table>
+            </div>
         </div>
     );
 }
