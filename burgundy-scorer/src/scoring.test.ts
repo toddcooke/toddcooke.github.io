@@ -5,6 +5,7 @@ import {
     playerTotal,
     winningIds,
     neededTiebreakers,
+    ranking,
 } from "./scoring";
 
 // Build a player with specific overrides on top of the zeroed defaults.
@@ -83,5 +84,27 @@ describe("neededTiebreakers", () => {
             player({ boardVp: 10, emptyHexSpaces: 3 }),
         ];
         expect(neededTiebreakers(ps)).toEqual(["emptyHexSpaces", "bridgePosition"]);
+    });
+});
+
+describe("ranking", () => {
+    it("assigns places in tiebreaker order regardless of input order", () => {
+        const a = player({ boardVp: 30 });
+        const b = player({ boardVp: 20 });
+        const c = player({ boardVp: 25 });
+        const places = ranking([b, a, c]);
+        expect(places.get(a.id)).toBe(1);
+        expect(places.get(c.id)).toBe(2);
+        expect(places.get(b.id)).toBe(3);
+    });
+
+    it("shares a place on a full tie and skips the next (1, 1, 3)", () => {
+        const a = player({ boardVp: 30 });
+        const b = player({ boardVp: 30 });
+        const c = player({ boardVp: 10 });
+        const places = ranking([a, b, c]);
+        expect(places.get(a.id)).toBe(1);
+        expect(places.get(b.id)).toBe(1);
+        expect(places.get(c.id)).toBe(3);
     });
 });

@@ -74,26 +74,43 @@ export function playerTotal(p: Player): number {
     return SCORE_ROWS.reduce((sum, row) => sum + p[row.key] * row.vpPerUnit, 0);
 }
 
-// Winner(s) by: highest total, then fewest empty hex spaces, then farthest
-// behind on the bridge (highest bridgePosition). Returns >1 id only on a full tie.
+// Ranking order: highest total, then fewest empty hex spaces, then farthest
+// behind on the bridge (highest bridgePosition).
+function compareForRank(a: Player, b: Player): number {
+    return (
+        playerTotal(b) - playerTotal(a) ||
+        a.emptyHexSpaces - b.emptyHexSpaces ||
+        b.bridgePosition - a.bridgePosition
+    );
+}
+
+// Two players are tied when equal on every ranking criterion.
+function fullyTied(a: Player, b: Player): boolean {
+    return (
+        playerTotal(a) === playerTotal(b) &&
+        a.emptyHexSpaces === b.emptyHexSpaces &&
+        a.bridgePosition === b.bridgePosition
+    );
+}
+
+// Winner(s): the top-ranked player(s). Returns >1 id only on a full tie.
 export function winningIds(players: Player[]): Set<string> {
     if (players.length === 0) return new Set();
-    const best = [...players].sort(
-        (a, b) =>
-            playerTotal(b) - playerTotal(a) ||
-            a.emptyHexSpaces - b.emptyHexSpaces ||
-            b.bridgePosition - a.bridgePosition,
-    )[0];
-    return new Set(
-        players
-            .filter(
-                p =>
-                    playerTotal(p) === playerTotal(best) &&
-                    p.emptyHexSpaces === best.emptyHexSpaces &&
-                    p.bridgePosition === best.bridgePosition,
-            )
-            .map(p => p.id),
-    );
+    const best = [...players].sort(compareForRank)[0];
+    return new Set(players.filter(p => fullyTied(p, best)).map(p => p.id));
+}
+
+// Standard competition ranking (1, 2, 2, 4): map of player id -> place (1-based).
+// Fully-tied players share a place and the next place skips accordingly.
+export function ranking(players: Player[]): Map<string, number> {
+    const sorted = [...players].sort(compareForRank);
+    const places = new Map<string, number>();
+    sorted.forEach((p, i) => {
+        const place =
+            i > 0 && fullyTied(sorted[i - 1], p) ? places.get(sorted[i - 1].id)! : i + 1;
+        places.set(p.id, place);
+    });
+    return places;
 }
 
 // Which tiebreaker rows are actually needed, given current totals/values.

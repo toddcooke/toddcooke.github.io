@@ -5,9 +5,17 @@ import {
     TIEBREAKER_ROWS,
     makePlayer,
     playerTotal,
-    winningIds,
+    ranking,
     neededTiebreakers,
 } from "./scoring";
+
+// "1ST", "2ND", "3RD", else "<n>TH" (player counts are small, so no 21ST edge cases).
+function placeLabel(place: number): string {
+    if (place === 1) return "1ST";
+    if (place === 2) return "2ND";
+    if (place === 3) return "3RD";
+    return `${place}TH`;
+}
 
 const STORAGE_KEY = "burgundy-scorer:players";
 
@@ -51,7 +59,7 @@ export default function App() {
         setPlayers(prev => prev.filter(p => p.id !== id));
     }
 
-    const winners = winningIds(players);
+    const places = ranking(players);
     const tiebreakers = neededTiebreakers(players);
 
     return (
@@ -126,19 +134,32 @@ export default function App() {
                 </tbody>
                 <tfoot>
                 <tr>
-                    <th scope="row">Total</th>
+                    <th scope="row">Place</th>
                     {players.map(player => {
-                        const isWinner = winners.has(player.id);
+                        const place = places.get(player.id) ?? players.length;
+                        const rankClass = place <= 4 ? `rank-${place}` : "rank-other";
                         return (
-                            <td
-                                key={player.id}
-                                className={isWinner ? "winner" : undefined}
-                                aria-label={`Total ${playerTotal(player)} for ${player.name}${isWinner ? ", winner" : ""}`}
-                            >
-                                {isWinner ? "🏆 " : ""}{playerTotal(player)}
+                            <td key={player.id}>
+                                <span
+                                    className={`medal ${rankClass}`}
+                                    aria-label={`${placeLabel(place)} place for ${player.name}`}
+                                >
+                                    {placeLabel(place)}
+                                </span>
                             </td>
                         );
                     })}
+                </tr>
+                <tr>
+                    <th scope="row">Total</th>
+                    {players.map(player => (
+                        <td
+                            key={player.id}
+                            aria-label={`Total ${playerTotal(player)} for ${player.name}`}
+                        >
+                            {playerTotal(player)}
+                        </td>
+                    ))}
                 </tr>
                 {TIEBREAKER_ROWS.filter(row => tiebreakers.includes(row.key)).map(row => (
                     <tr key={row.key}>
