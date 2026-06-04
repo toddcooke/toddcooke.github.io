@@ -43,6 +43,8 @@ function loadPlayers(): Player[] {
 
 export default function App() {
     const [players, setPlayers] = useState<Player[]>(loadPlayers);
+    // Which monastery tag's count editor is open ("<playerId>:<tile>"), or null.
+    const [editingMonastery, setEditingMonastery] = useState<string | null>(null);
 
     // Persist to localStorage whenever players change (ignore quota/private-mode errors).
     useEffect(() => {
@@ -180,35 +182,51 @@ export default function App() {
                                     {player.monasteries.map(h => {
                                         const tile = monasteryTile(h.tile);
                                         if (!tile) return null;
+                                        const editKey = `${player.id}:${h.tile}`;
+                                        const open = editingMonastery === editKey;
                                         return (
                                             <li key={h.tile}>
-                                                <span className="m-tag" title={tile.label}>
-                                                    #{h.tile}
-                                                </span>
-                                                <input
-                                                    type="number"
-                                                    min={0}
-                                                    inputMode="numeric"
-                                                    value={h.count}
-                                                    aria-label={`${tile.unitLabel} for ${player.name} (${tile.label})`}
-                                                    onFocus={e => e.target.select()}
-                                                    onChange={e =>
-                                                        setMonasteryCount(
-                                                            player.id,
-                                                            h.tile,
-                                                            Number(e.target.value),
-                                                        )
-                                                    }
-                                                />
                                                 <button
                                                     type="button"
-                                                    className="remove-player"
-                                                    aria-label={`Remove ${tile.label} from ${player.name}`}
-                                                    title="Remove this monastery"
-                                                    onClick={() => removeMonastery(player.id, h.tile)}
+                                                    className="m-tag"
+                                                    aria-expanded={open}
+                                                    title={`${tile.label} — ${h.count} ${tile.unitLabel} = ${h.count * tile.vpPerUnit} VP (click to edit)`}
+                                                    onClick={() => setEditingMonastery(open ? null : editKey)}
                                                 >
-                                                    ✕
+                                                    #{h.tile}
                                                 </button>
+                                                {open && (
+                                                    <>
+                                                        <input
+                                                            type="number"
+                                                            min={0}
+                                                            inputMode="numeric"
+                                                            autoFocus
+                                                            value={h.count}
+                                                            aria-label={`${tile.unitLabel} for ${player.name} (${tile.label})`}
+                                                            onFocus={e => e.target.select()}
+                                                            onChange={e =>
+                                                                setMonasteryCount(
+                                                                    player.id,
+                                                                    h.tile,
+                                                                    Number(e.target.value),
+                                                                )
+                                                            }
+                                                        />
+                                                        <button
+                                                            type="button"
+                                                            className="remove-player"
+                                                            aria-label={`Remove ${tile.label} from ${player.name}`}
+                                                            title="Remove this monastery"
+                                                            onClick={() => {
+                                                                removeMonastery(player.id, h.tile);
+                                                                setEditingMonastery(null);
+                                                            }}
+                                                        >
+                                                            ✕
+                                                        </button>
+                                                    </>
+                                                )}
                                             </li>
                                         );
                                     })}
