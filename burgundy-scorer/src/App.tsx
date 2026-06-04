@@ -5,6 +5,8 @@ import {
     TIEBREAKER_ROWS,
     MONASTERY_TILES,
     monasteryTile,
+    SHIELDS,
+    shieldById,
     makePlayer,
     playerTotal,
     ranking,
@@ -88,12 +90,30 @@ export default function App() {
         );
     }
 
+    function addShield(ownerId: string, id: number) {
+        setPlayers(prev =>
+            prev.map(p => (p.id === ownerId ? { ...p, shields: [...p.shields, id] } : p)),
+        );
+    }
+
+    function removeShield(ownerId: string, id: number) {
+        setPlayers(prev =>
+            prev.map(p =>
+                p.id === ownerId ? { ...p, shields: p.shields.filter(s => s !== id) } : p,
+            ),
+        );
+    }
+
     const places = ranking(players);
     const tiebreakers = neededTiebreakers(players);
 
     // Tiles already owned by someone, so each unique tile is offered only once.
     const ownedTileIds = new Set(players.flatMap(p => p.monasteries.map(h => h.tile)));
     const availableTiles = MONASTERY_TILES.filter(t => !ownedTileIds.has(t.id));
+
+    // Shields are unique too — offer each only once.
+    const ownedShieldIds = new Set(players.flatMap(p => p.shields));
+    const availableShields = SHIELDS.filter(s => !ownedShieldIds.has(s.id));
 
     return (
         <div>
@@ -225,6 +245,55 @@ export default function App() {
                                     {availableTiles.map(t => (
                                         <option key={t.id} value={t.id}>
                                             {t.label}
+                                        </option>
+                                    ))}
+                                </select>
+                            )}
+                        </td>
+                    ))}
+                </tr>
+                <tr>
+                    <th scope="row">Shields</th>
+                    {players.map(player => (
+                        <td key={player.id} className="monastery-cell">
+                            {player.shields.length > 0 && (
+                                <ul>
+                                    {[...player.shields]
+                                        .sort((a, b) => a - b)
+                                        .map(id => {
+                                            const shield = shieldById(id);
+                                            if (!shield) return null;
+                                            return (
+                                                <li key={id}>
+                                                    <span className="m-name">Shield {id}</span>
+                                                    <span className="m-unit">{shield.effect}</span>
+                                                    <span className="m-vp">{shield.vp} VP</span>
+                                                    <button
+                                                        type="button"
+                                                        className="m-remove"
+                                                        aria-label={`Remove Shield ${id} from ${player.name}`}
+                                                        title="Remove this shield"
+                                                        onClick={() => removeShield(player.id, id)}
+                                                    >
+                                                        ✕
+                                                    </button>
+                                                </li>
+                                            );
+                                        })}
+                                </ul>
+                            )}
+                            {availableShields.length > 0 && (
+                                <select
+                                    aria-label={`Add shield for ${player.name}`}
+                                    value=""
+                                    onChange={e => {
+                                        if (e.target.value) addShield(player.id, Number(e.target.value));
+                                    }}
+                                >
+                                    <option value="">+ Add shield…</option>
+                                    {availableShields.map(s => (
+                                        <option key={s.id} value={s.id}>
+                                            Shield {s.id} — {s.effect} ({s.vp} VP)
                                         </option>
                                     ))}
                                 </select>

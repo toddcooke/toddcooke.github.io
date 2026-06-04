@@ -46,6 +46,23 @@ describe("playerTotal", () => {
         });
         expect(playerTotal(p)).toBe(5);
     });
+
+    it("adds shield VP by tier (#1-6=12, #7-12=8, #13-18=4)", () => {
+        const p = player({ shields: [1, 7, 18] });
+        expect(playerTotal(p)).toBe(12 + 8 + 4);
+    });
+
+    it("shield #10 doubles the player's monastery VP", () => {
+        // #10 is worth 8; monastery #17 = 2×4 = 8, doubled to 16.
+        const p = player({ shields: [10], monasteries: [{ tile: "17", count: 2 }] });
+        expect(playerTotal(p)).toBe(8 + 16);
+    });
+
+    it("shield #13 doubles total shield VP (including itself)", () => {
+        // #5 (12) + #13 (4) = 16, doubled = 32.
+        const p = player({ shields: [5, 13] });
+        expect(playerTotal(p)).toBe(32);
+    });
 });
 
 describe("winningIds", () => {
