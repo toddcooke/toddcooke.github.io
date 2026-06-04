@@ -186,46 +186,46 @@ export default function App() {
                                         const open = editingMonastery === editKey;
                                         return (
                                             <li key={h.tile}>
-                                                <button
-                                                    type="button"
-                                                    className="m-tag"
-                                                    aria-expanded={open}
-                                                    title={`${tile.label} — ${h.count} ${tile.unitLabel} = ${h.count * tile.vpPerUnit} VP (click to edit)`}
-                                                    onClick={() => setEditingMonastery(open ? null : editKey)}
-                                                >
-                                                    #{h.tile}
-                                                </button>
+                                                <span className="m-chip">
+                                                    <button
+                                                        type="button"
+                                                        className="m-tag"
+                                                        aria-expanded={open}
+                                                        title={`${tile.label} — ${h.count} ${tile.unitLabel} = ${h.count * tile.vpPerUnit} VP (click to edit)`}
+                                                        onClick={() => setEditingMonastery(open ? null : editKey)}
+                                                    >
+                                                        #{h.tile}
+                                                    </button>
+                                                    <button
+                                                        type="button"
+                                                        className="m-remove"
+                                                        aria-label={`Remove ${tile.label} from ${player.name}`}
+                                                        title="Remove this monastery"
+                                                        onClick={() => {
+                                                            removeMonastery(player.id, h.tile);
+                                                            if (open) setEditingMonastery(null);
+                                                        }}
+                                                    >
+                                                        ✕
+                                                    </button>
+                                                </span>
                                                 {open && (
-                                                    <>
-                                                        <input
-                                                            type="number"
-                                                            min={0}
-                                                            inputMode="numeric"
-                                                            autoFocus
-                                                            value={h.count}
-                                                            aria-label={`${tile.unitLabel} for ${player.name} (${tile.label})`}
-                                                            onFocus={e => e.target.select()}
-                                                            onChange={e =>
-                                                                setMonasteryCount(
-                                                                    player.id,
-                                                                    h.tile,
-                                                                    Number(e.target.value),
-                                                                )
-                                                            }
-                                                        />
-                                                        <button
-                                                            type="button"
-                                                            className="remove-player"
-                                                            aria-label={`Remove ${tile.label} from ${player.name}`}
-                                                            title="Remove this monastery"
-                                                            onClick={() => {
-                                                                removeMonastery(player.id, h.tile);
-                                                                setEditingMonastery(null);
-                                                            }}
-                                                        >
-                                                            ✕
-                                                        </button>
-                                                    </>
+                                                    <input
+                                                        type="number"
+                                                        min={0}
+                                                        inputMode="numeric"
+                                                        autoFocus
+                                                        value={h.count}
+                                                        aria-label={`${tile.unitLabel} for ${player.name} (${tile.label})`}
+                                                        onFocus={e => e.target.select()}
+                                                        onChange={e =>
+                                                            setMonasteryCount(
+                                                                player.id,
+                                                                h.tile,
+                                                                Number(e.target.value),
+                                                            )
+                                                        }
+                                                    />
                                                 )}
                                             </li>
                                         );

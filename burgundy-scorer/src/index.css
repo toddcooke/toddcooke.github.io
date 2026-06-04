@@ -126,22 +126,40 @@ caption {
   gap: 0.3rem;
 }
 
-/* Tile tag is a chip-button; click to reveal its count editor. */
-.monastery-cell .m-tag {
-  font-weight: 700;
-  font-size: 0.85rem;
-  min-height: 24px;
-  margin: 0;
-  padding: 0.15rem 0.5rem;
+/* Pill chip "#16 ✕": the number opens the count editor, the ✕ removes it. */
+.monastery-cell .m-chip {
+  display: inline-flex;
+  align-items: stretch;
   border: 1px solid var(--border);
   border-radius: 999px;
+  overflow: hidden;
+}
+
+.monastery-cell .m-chip .m-tag,
+.monastery-cell .m-chip .m-remove {
+  min-height: 24px;
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  font-size: 0.85rem;
   background: var(--surface);
   color: var(--text);
   cursor: pointer;
 }
 
-.monastery-cell .m-tag[aria-expanded="true"] {
-  border-color: var(--accent);
+.monastery-cell .m-chip .m-tag {
+  font-weight: 700;
+  padding: 0.15rem 0.5rem;
+}
+
+.monastery-cell .m-chip .m-tag[aria-expanded="true"] {
+  background: color-mix(in srgb, var(--accent) 16%, var(--surface));
+}
+
+.monastery-cell .m-chip .m-remove {
+  padding: 0.15rem 0.45rem;
+  border-left: 1px solid var(--border);
+  color: var(--muted);
 }
 
 .monastery-cell input[type="number"] {
