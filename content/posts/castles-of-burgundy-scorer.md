@@ -8,3 +8,4 @@ I've been playing a fun board game called [Castles of Burgundy](https://en.wikip
 
 [Check it out!](https://toddcooke.github.io/castles-of-burgundy-scorer/)
 
+<img width="1284" height="801" alt="Screenshot of Castles of Burgundy Scorer site" src="https://github.com/user-attachments/assets/4ae9cad1-e4e6-40fa-a5c5-5b9f9f4b2469" />
