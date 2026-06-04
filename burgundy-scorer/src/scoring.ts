@@ -16,6 +16,7 @@ export interface Player {
     silverCoins: number;      // 1 VP each
     workerChipsPair: number;  // 1 VP per pair
     monasteries: MonasteryHolding[];
+    shields: number[]; // shield ids (1-18) the player holds
     // Tiebreakers (never scored): used only when totals are equal.
     emptyHexSpaces: number;   // fewer wins
     bridgePosition: number;   // higher = farther behind, wins
@@ -65,6 +66,44 @@ export function monasteryTile(id: string): MonasteryTile | undefined {
     return MONASTERY_TILES.find(t => t.id === id);
 }
 
+// "The Shields" expansion: 18 unique shields. Each awards a fixed VP at game end
+// (#1-6 = 12, #7-12 = 8, #13-18 = 4) plus an ongoing in-game effect. A couple
+// change final scoring: #10 doubles the holder's monastery VP, #13 doubles the
+// holder's shield VP. (#6 copy-monasteries and #7 double-bonus-tiles aren't
+// auto-applied — those stay in Board VP.)
+export interface Shield {
+    id: number;
+    vp: number;
+    effect: string;
+}
+
+export const SHIELDS: Shield[] = [
+    { id: 1, vp: 12, effect: "All pastures count as one (more livestock VP)" },
+    { id: 2, vp: 12, effect: "Gain a worker when another player does" },
+    { id: 3, vp: 12, effect: "Pay shield tribute with workers" },
+    { id: 4, vp: 12, effect: "Unlimited tile storage" },
+    { id: 5, vp: 12, effect: "Extra goods of one type when placing a ship" },
+    { id: 6, vp: 12, effect: "Copy a chosen player's monasteries" },
+    { id: 7, vp: 8, effect: "Bonus tiles score double" },
+    { id: 8, vp: 8, effect: "Double mine payout" },
+    { id: 9, vp: 8, effect: "1 silver per goods tile sold" },
+    { id: 10, vp: 8, effect: "Monastery VP score double" },
+    { id: 11, vp: 8, effect: "Grab a shield when you place a castle" },
+    { id: 12, vp: 8, effect: "Double VP per goods tile sold" },
+    { id: 13, vp: 4, effect: "Double VP per shield you hold" },
+    { id: 14, vp: 4, effect: "End of phase: take a hex from any depot" },
+    { id: 15, vp: 4, effect: "End of phase: take a hex from the black depot" },
+    { id: 16, vp: 4, effect: "Set one die to any number" },
+    { id: 17, vp: 4, effect: "Completed areas score as the next size up" },
+    { id: 18, vp: 4, effect: "Place hex tiles anywhere in your duchy" },
+];
+
+const SHIELD_VP: Record<number, number> = Object.fromEntries(SHIELDS.map(s => [s.id, s.vp]));
+
+export function shieldById(id: number): Shield | undefined {
+    return SHIELDS.find(s => s.id === id);
+}
+
 // Tiebreaker-only fields (never added to the total).
 export type TiebreakerKey = "emptyHexSpaces" | "bridgePosition";
 export const TIEBREAKER_ROWS: { label: string; key: TiebreakerKey }[] = [
@@ -81,19 +120,27 @@ export function makePlayer(name: string): Player {
         silverCoins: 0,
         workerChipsPair: 0,
         monasteries: [],
+        shields: [],
         emptyHexSpaces: 0,
         bridgePosition: 0,
     };
 }
 
-// Total VP: base rows (1 VP per unit) + each owned monastery's count × its rate.
+// Total VP: base rows (1 VP per unit) + monastery VP + shield VP, applying the
+// shield doublers (#10 doubles monastery VP, #13 doubles shield VP).
 export function playerTotal(p: Player): number {
     const base = SCORE_ROWS.reduce((sum, row) => sum + p[row.key], 0);
-    const monastery = p.monasteries.reduce(
+
+    let monastery = p.monasteries.reduce(
         (sum, h) => sum + h.count * (TILE_VP[h.tile] ?? 0),
         0,
     );
-    return base + monastery;
+    if (p.shields.includes(10)) monastery *= 2; // shield #10
+
+    let shields = p.shields.reduce((sum, id) => sum + (SHIELD_VP[id] ?? 0), 0);
+    if (p.shields.includes(13)) shields *= 2; // shield #13
+
+    return base + monastery + shields;
 }
 
 // Ranking order: highest total, then fewest empty hex spaces, then farthest
