@@ -108,9 +108,8 @@ caption {
   filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.35));
 }
 
-/* Metallic sheen: bright highlight -> base tone -> darker edge. */
-/* Monasteries cell: each player's owned tiles (tag + count + remove) and an
-   "add" dropdown that only lists still-unclaimed tiles. */
+/* Monasteries cell: each player's owned tiles (labelled line + count + remove)
+   and an "add" dropdown that only lists still-unclaimed tiles. */
 .monastery-cell ul {
   list-style: none;
   margin: 0 0 0.4rem;
@@ -122,44 +121,27 @@ caption {
 
 .monastery-cell li {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 0.3rem;
+  gap: 0.35rem;
 }
 
-/* Pill chip "#16 ✕": the number opens the count editor, the ✕ removes it. */
-.monastery-cell .m-chip {
-  display: inline-flex;
-  align-items: stretch;
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  overflow: hidden;
+/* Each owned tile as a labelled line: "Monastery 16 · matching buildings: [5] ✕". */
+.monastery-cell .m-name {
+  font-weight: 700;
 }
 
-.monastery-cell .m-chip .m-tag,
-.monastery-cell .m-chip .m-remove {
+.monastery-cell .m-unit {
+  color: var(--muted);
+}
+
+.monastery-cell .m-remove {
+  min-width: 24px;
   min-height: 24px;
   margin: 0;
-  border: 0;
-  border-radius: 0;
-  font-size: 0.85rem;
-  background: var(--surface);
-  color: var(--text);
-  cursor: pointer;
-}
-
-.monastery-cell .m-chip .m-tag {
-  font-weight: 700;
-  padding: 0.15rem 0.5rem;
-}
-
-.monastery-cell .m-chip .m-tag[aria-expanded="true"] {
-  background: color-mix(in srgb, var(--accent) 16%, var(--surface));
-}
-
-.monastery-cell .m-chip .m-remove {
-  padding: 0.15rem 0.45rem;
-  border-left: 1px solid var(--border);
-  color: var(--muted);
+  padding: 0.1rem 0.4rem;
+  font-size: 14px;
+  line-height: 1;
 }
 
 .monastery-cell input[type="number"] {
