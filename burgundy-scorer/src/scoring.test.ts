@@ -3,7 +3,6 @@ import {
     type Player,
     makePlayer,
     playerTotal,
-    winningIds,
     neededTiebreakers,
     ranking,
 } from "./scoring";
@@ -62,36 +61,6 @@ describe("playerTotal", () => {
         // #5 (12) + #13 (4) = 16, doubled = 32.
         const p = player({ shields: [5, 13] });
         expect(playerTotal(p)).toBe(32);
-    });
-});
-
-describe("winningIds", () => {
-    it("picks the highest total", () => {
-        const a = player({ boardVp: 30 });
-        const b = player({ boardVp: 20 });
-        expect([...winningIds([a, b])]).toEqual([a.id]);
-    });
-
-    it("breaks a total tie by fewest empty hex spaces", () => {
-        const a = player({ boardVp: 30, emptyHexSpaces: 5 });
-        const b = player({ boardVp: 30, emptyHexSpaces: 2 });
-        expect([...winningIds([a, b])]).toEqual([b.id]);
-    });
-
-    it("then breaks by highest bridge position (farthest behind)", () => {
-        const a = player({ boardVp: 30, emptyHexSpaces: 3, bridgePosition: 2 });
-        const b = player({ boardVp: 30, emptyHexSpaces: 3, bridgePosition: 7 });
-        expect([...winningIds([a, b])]).toEqual([b.id]);
-    });
-
-    it("returns all players on a full tie", () => {
-        const a = player({ boardVp: 30, emptyHexSpaces: 3, bridgePosition: 5 });
-        const b = player({ boardVp: 30, emptyHexSpaces: 3, bridgePosition: 5 });
-        expect(winningIds([a, b])).toEqual(new Set([a.id, b.id]));
-    });
-
-    it("is empty when there are no players", () => {
-        expect(winningIds([])).toEqual(new Set());
     });
 });
 

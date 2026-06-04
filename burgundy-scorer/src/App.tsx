@@ -266,7 +266,9 @@ export default function App() {
                                             return (
                                                 <li key={id}>
                                                     <span className="m-name">Shield {id}</span>
-                                                    <span className="m-unit">{shield.effect}</span>
+                                                    <span className="m-unit" title={shield.effect}>
+                                                        {shield.effect}
+                                                    </span>
                                                     <span className="m-vp">{shield.vp} VP</span>
                                                     <button
                                                         type="button"

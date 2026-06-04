@@ -134,6 +134,11 @@ caption {
 
 .monastery-cell .m-unit {
   color: var(--muted);
+  min-width: 0;
+  max-width: 12rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .monastery-cell .m-vp {
