@@ -162,13 +162,6 @@ function fullyTied(a: Player, b: Player): boolean {
     );
 }
 
-// Winner(s): the top-ranked player(s). Returns >1 id only on a full tie.
-export function winningIds(players: Player[]): Set<string> {
-    if (players.length === 0) return new Set();
-    const best = [...players].sort(compareForRank)[0];
-    return new Set(players.filter(p => fullyTied(p, best)).map(p => p.id));
-}
-
 // Standard competition ranking (1, 2, 2, 4): map of player id -> place (1-based).
 // Fully-tied players share a place and the next place skips accordingly.
 export function ranking(players: Player[]): Map<string, number> {

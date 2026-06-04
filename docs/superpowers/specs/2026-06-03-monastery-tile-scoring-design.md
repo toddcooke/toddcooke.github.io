@@ -82,3 +82,26 @@ player names are unchanged. Monastery rows appear after the four base rows.
 - A per-player tile picker (Approach B).
 - 1st-edition values (2019 only).
 - Validation/caps on counts (e.g. max goods types); trust user input.
+
+## As-built (evolved beyond this spec)
+
+This spec captures the initial design; the implementation later evolved through
+follow-up requests. The shipped behavior:
+
+- **Each monastery is a unique, single-owner tile.** The collapsed "Building
+  monastery" row was split into individual tiles **#16–#23 and #29**, and every
+  building monastery is named by its specific building (16 warehouse, 17
+  watchtower, 18 carpenter's workshop, 19 church, 20 market, 21 boarding house,
+  22 bank, 23 town hall, 29 white castle).
+- **Add-on-demand, not 13 fixed rows.** Monasteries live on a single in-table
+  "Monasteries" row; each player's cell lists only the tiles they own as
+  labelled lines (`Monastery 17 · watchtowers: [n] ✕`) plus an "+ Add monastery"
+  dropdown that offers only still-unclaimed tiles. Data is stored per player as
+  `monasteries: { tile, count }[]`.
+- **Shields expansion** (added later): a "Shields" row where each player holds
+  unique shields (#1–18), each worth a tier VP (12/8/4). `playerTotal` applies
+  the doublers — **#10** doubles the holder's monastery VP, **#13** doubles the
+  holder's shield VP. #6 (copy monasteries) and #7 (double bonus tiles) are left
+  in Board VP.
+- `playerTotal` therefore sums base rows + monastery VP (×2 if #10) + shield VP
+  (×2 if #13); pure scoring logic lives in `scoring.ts` with Vitest coverage.
