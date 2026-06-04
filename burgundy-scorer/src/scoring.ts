@@ -43,18 +43,18 @@ export interface MonasteryTile {
 
 export const MONASTERY_TILES: MonasteryTile[] = [
     { id: "15", label: "#15 Goods variety (2 VP / goods type sold)", vpPerUnit: 2, unitLabel: "goods types sold" },
-    { id: "16", label: "#16 Building (4 VP / matching building)", vpPerUnit: 4, unitLabel: "matching buildings" },
-    { id: "17", label: "#17 Building (4 VP / matching building)", vpPerUnit: 4, unitLabel: "matching buildings" },
-    { id: "18", label: "#18 Building (4 VP / matching building)", vpPerUnit: 4, unitLabel: "matching buildings" },
-    { id: "19", label: "#19 Building (4 VP / matching building)", vpPerUnit: 4, unitLabel: "matching buildings" },
-    { id: "20", label: "#20 Building (4 VP / matching building)", vpPerUnit: 4, unitLabel: "matching buildings" },
-    { id: "21", label: "#21 Building (4 VP / matching building)", vpPerUnit: 4, unitLabel: "matching buildings" },
-    { id: "22", label: "#22 Building (4 VP / matching building)", vpPerUnit: 4, unitLabel: "matching buildings" },
-    { id: "23", label: "#23 Building (4 VP / matching building)", vpPerUnit: 4, unitLabel: "matching buildings" },
+    { id: "16", label: "#16 Warehouse (4 VP / warehouse)", vpPerUnit: 4, unitLabel: "warehouses" },
+    { id: "17", label: "#17 Watchtower (4 VP / watchtower)", vpPerUnit: 4, unitLabel: "watchtowers" },
+    { id: "18", label: "#18 Carpenter's workshop (4 VP / workshop)", vpPerUnit: 4, unitLabel: "carpenter's workshops" },
+    { id: "19", label: "#19 Church (4 VP / church)", vpPerUnit: 4, unitLabel: "churches" },
+    { id: "20", label: "#20 Market (4 VP / market)", vpPerUnit: 4, unitLabel: "markets" },
+    { id: "21", label: "#21 Boarding house (4 VP / boarding house)", vpPerUnit: 4, unitLabel: "boarding houses" },
+    { id: "22", label: "#22 Bank (4 VP / bank)", vpPerUnit: 4, unitLabel: "banks" },
+    { id: "23", label: "#23 Town hall (4 VP / town hall)", vpPerUnit: 4, unitLabel: "town halls" },
     { id: "24", label: "#24 Livestock variety (4 VP / livestock type)", vpPerUnit: 4, unitLabel: "livestock types" },
     { id: "25", label: "#25 Goods sold (1 VP / goods tile sold)", vpPerUnit: 1, unitLabel: "goods sold" },
     { id: "26", label: "#26 Bonus tiles (3 VP / bonus tile owned)", vpPerUnit: 3, unitLabel: "bonus tiles owned" },
-    { id: "29", label: "#29 Building (4 VP / matching building)", vpPerUnit: 4, unitLabel: "matching buildings" },
+    { id: "29", label: "#29 White castle (4 VP / white castle)", vpPerUnit: 4, unitLabel: "white castles" },
 ];
 
 const TILE_VP: Record<string, number> = Object.fromEntries(
