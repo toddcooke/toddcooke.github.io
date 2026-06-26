@@ -50,16 +50,6 @@ jobs:
       - name: Setup Pages
         id: pages
         uses: actions/configure-pages@v6
-      - name: Install Node.js dependencies
-        run: "[[ -f package-lock.json || -f npm-shrinkwrap.json ]] && npm ci || true"
-      - name: Setup Node
-        uses: actions/setup-node@v6
-        with:
-          node-version: 20
-          cache: npm
-          cache-dependency-path: burgundy-scorer/package-lock.json
-      - name: Build burgundy-scorer (React)
-        run: cd burgundy-scorer && npm ci && npm run build
       - name: Build with Hugo
         env:
           # For maximum backward compatibility with Hugo modules
