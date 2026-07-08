@@ -11,6 +11,10 @@ params:
 
 menu:
   main:
+    - identifier: learn
+      name: learn
+      url: /learn/
+      weight: 5
     - identifier: contact
       name: contact
       url: /contact/
