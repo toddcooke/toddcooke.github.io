@@ -1,0 +1,46 @@
+name: Sync learning module submodules
+
+# Learning modules under static/learn/<module> are git submodules pointing
+# at their own repos. This job advances each one to its latest upstream
+# commit and pushes the update, which triggers the normal Hugo deploy
+# workflow. New modules added under static/learn/ are picked up
+# automatically -- nothing here needs to change when one is added.
+
+on:
+  schedule:
+    - cron: '0 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          submodules: true
+
+      - name: Update learning module submodules to latest
+        id: update
+        run: |
+          paths=$(git config --file .gitmodules --get-regexp path | awk '{print $2}' | grep '^static/learn/' || true)
+          if [ -z "$paths" ]; then
+            echo "No learning-module submodules found under static/learn/"
+            exit 0
+          fi
+          git submodule update --remote -- $paths
+
+      - name: Commit and push if changed
+        run: |
+          if git diff --quiet -- static/learn; then
+            echo "No submodule updates."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add static/learn
+          git commit -m "Sync learning module submodules to latest"
+          git push
