@@ -1,13 +1,18 @@
 name: Sync learning module submodules
 
-# Learning modules under static/learn/<module> are git submodules pointing
-# at their own repos. This job advances each one to its latest upstream
-# commit and pushes the update, then explicitly dispatches the Hugo deploy
-# workflow (a plain push made with GITHUB_TOKEN does NOT trigger other
-# workflows -- that's GitHub's built-in loop prevention -- but workflow_dispatch
-# is specifically exempted, so we trigger it directly instead of relying on
-# the push event). New modules added under static/learn/ are picked up
-# automatically -- nothing here needs to change when one is added.
+# static/learn is a single git submodule (toddcooke/learn) holding every
+# learning module as a sibling subdirectory (aws/, kubernetes/, ...). This
+# job advances it to its latest upstream commit and pushes the update, then
+# explicitly dispatches the Hugo deploy workflow (a plain push made with
+# GITHUB_TOKEN does NOT trigger other workflows -- that's GitHub's built-in
+# loop prevention -- but workflow_dispatch is specifically exempted, so we
+# trigger it directly instead of relying on the push event). New modules
+# added as a new subdirectory in toddcooke/learn are picked up automatically
+# on the next sync -- nothing here needs to change when one is added.
+#
+# The path-matching below (`^static/learn($|/)`) also tolerates a future
+# return to one-submodule-per-module nested under static/learn/<module>,
+# in case that pattern is ever used again alongside or instead of this one.
 
 on:
   schedule:
@@ -29,9 +34,9 @@ jobs:
 
       - name: Update learning module submodules to latest
         run: |
-          paths=$(git config --file .gitmodules --get-regexp path | awk '{print $2}' | grep '^static/learn/' || true)
+          paths=$(git config --file .gitmodules --get-regexp path | awk '{print $2}' | grep -E '^static/learn($|/)' || true)
           if [ -z "$paths" ]; then
-            echo "No learning-module submodules found under static/learn/"
+            echo "No learning-module submodules found under static/learn"
             exit 0
           fi
           git submodule update --remote -- $paths
