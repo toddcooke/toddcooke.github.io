@@ -1,6 +1,6 @@
 [submodule "themes/PaperMod"]
 	path = themes/PaperMod
 	url = https://github.com/adityatelange/hugo-PaperMod.git
-[submodule "static/learn/aws"]
-	path = static/learn/aws
+[submodule "static/learn"]
+	path = static/learn
 	url = https://github.com/toddcooke/learn.git
