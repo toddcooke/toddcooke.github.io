@@ -4,3 +4,4 @@ Modules I've put together to study a subject in depth:
 - [Certified Kubernetes Administrator (CKA) exam prep](/learn/kubernetes/)
 - [PostgreSQL mastery](/learn/postgres/)
 - [Site Reliability Engineering mastery](/learn/sre/)
+- [CompTIA Network+ (N10-009) exam prep](/learn/networking/)
