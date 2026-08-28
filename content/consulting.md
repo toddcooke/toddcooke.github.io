@@ -25,7 +25,7 @@ contract engagements, remote from Vermont.
 ## Credentials
 
 - AWS Certified Solutions Architect – Associate
-  ([verify]([https://www.credly.com/badges/YOUR-BADGE-ID/public_url](https://www.credly.com/badges/27c58a58-9eb5-4be8-aef7-b98c40918472/public_url)))
+  ([verify](https://www.credly.com/badges/27c58a58-9eb5-4be8-aef7-b98c40918472/public_url))
 
 ## Get in touch
 
