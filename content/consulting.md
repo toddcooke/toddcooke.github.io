@@ -18,8 +18,7 @@ contract engagements, remote from Vermont.
 
 - Fixed-scope projects or ongoing hourly/weekly contracts
 - Currently available for about **40 hours per week**
-- Contracting through Todd Cooke VT LLC, I can sign an MSA/SOW, provide a W-9 and certificate of insurance, and invoice
-  as a vendor
+- Contracting through Todd Cooke VT LLC, I can sign an MSA/SOW, provide a W-9, and invoice as a vendor
 - Remote, US Eastern time
 
 ## Credentials
